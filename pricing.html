@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Plans</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--bg3:#eae7e0;--ink:#000000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.09);--blue:#2563eb;--gold:#d97706;--ultra:#7c3aed;--green:#16a34a;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+html.dark{--bg:#0d0d0b;--bg2:#161614;--bg3:#1e1e1b;--ink:#ffffff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:52px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:24px;border-radius:2px}
+.n-r{display:flex;align-items:center;gap:1.5rem}
+.n-r a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;transition:color .15s}
+.n-r a:hover{color:var(--ink)}
+#dbtn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 2rem}
+
+/* HEADER */
+.header{padding:80px 0 3rem;text-align:center;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.header h1{font-size:clamp(28px,4vw,48px);font-weight:300;letter-spacing:-.02em;color:var(--ink);margin-bottom:.75rem;font-family:'Georgia',serif;font-style:italic}
+.header-sub{font-size:13px;color:var(--ink2);max-width:480px;margin:0 auto 1.5rem;line-height:1.75}
+/* billing toggle */
+.billing-toggle{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:.5rem}
+.bt-opt{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:7px 16px;cursor:pointer;color:var(--ink3);background:none;border:none;transition:all .15s}
+.bt-opt.on{background:var(--ink);color:var(--bg)}
+.billing-note{font-family:var(--mono);font-size:10px;color:var(--green);margin-top:4px}
+
+/* PLANS GRID */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin:2.5rem 0}
+.plan{background:var(--bg);padding:2rem 1.75rem;position:relative;display:flex;flex-direction:column}
+html.dark .plan{background:var(--bg2)}
+.plan.featured{background:var(--bg2)}
+html.dark .plan.featured{background:var(--bg3)}
+.plan-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:2px;margin-bottom:1rem;display:inline-block;width:fit-content}
+.tag-free{color:var(--ink3);border:1px solid var(--rule);background:transparent}
+.tag-gold{color:var(--gold);border:1px solid rgba(217,119,6,.25);background:rgba(217,119,6,.06)}
+.tag-ultra{color:var(--ultra);border:1px solid rgba(124,58,237,.25);background:rgba(124,58,237,.06)}
+.plan-name{font-size:20px;font-weight:500;color:var(--ink);margin-bottom:.25rem;letter-spacing:-.01em}
+.plan-desc{font-size:12px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.6}
+.price-row{display:flex;align-items:baseline;gap:4px;margin-bottom:.25rem}
+.price{font-family:var(--mono);font-size:32px;font-weight:500;color:var(--ink);letter-spacing:-.02em}
+.price-period{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.price-orig{font-family:var(--mono);font-size:12px;color:var(--ink3);text-decoration:line-through;margin-left:4px}
+.price-save{font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:1.5rem}
+.features{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;flex:1}
+.feat{display:flex;align-items:flex-start;gap:.6rem;font-size:12.5px;color:var(--ink2)}
+.feat::before{content:'✓';color:var(--green);font-size:11px;flex-shrink:0;margin-top:2px}
+.feat.no{color:var(--ink3)}
+.feat.no::before{content:'—';color:var(--ink3)}
+.plan-btn{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:11px;border-radius:3px;cursor:pointer;transition:opacity .15s;text-align:center;text-decoration:none;display:block;font-weight:500}
+.btn-free{background:transparent;color:var(--ink2);border:1px solid var(--rule)}
+.btn-free:hover{border-color:var(--ink3);color:var(--ink)}
+.btn-gold{background:var(--gold);color:#fff;border:none}
+.btn-gold:hover{opacity:.85}
+.btn-ultra{background:var(--ultra);color:#fff;border:none}
+.btn-ultra:hover{opacity:.85}
+
+/* COMPARISON */
+.comparison{margin:2.5rem 0}
+.comp-title{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+.comp-title::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.comp-table{width:100%;border-collapse:collapse}
+.comp-table th{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:8px 12px;border-bottom:1px solid var(--rule);text-align:left;font-weight:400}
+.comp-table th:not(:first-child){text-align:center}
+.comp-table td{font-size:12.5px;color:var(--ink2);padding:10px 12px;border-bottom:1px solid var(--rule)}
+.comp-table td:not(:first-child){text-align:center;font-family:var(--mono);font-size:11px}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table tr:hover td{background:var(--bg2)}
+html.dark .comp-table tr:hover td{background:var(--bg3)}
+.c-yes{color:var(--green)}.c-no{color:var(--ink3)}.c-gold{color:var(--gold);font-weight:500}.c-ultra{color:var(--ultra);font-weight:500}
+
+/* PAYMENT */
+.payment-section{border-top:1px solid var(--rule);padding:2.5rem 0}
+.pay-title{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+.pay-title::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
+.pay-card{border:1px solid var(--rule);border-radius:3px;padding:1.25rem 1.5rem;background:var(--bg)}
+html.dark .pay-card{background:var(--bg2)}
+.pay-card-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.35rem}
+.pay-card-sub{font-size:12px;color:var(--ink3);line-height:1.6}
+.pay-badge{font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:2px 7px;border-radius:2px;margin-bottom:.75rem;display:inline-block}
+.badge-stripe{color:#635bff;background:rgba(99,91,255,.08);border:1px solid rgba(99,91,255,.2)}
+.badge-crypto{color:var(--green);background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2)}
+
+/* FAQ */
+.faq{border-top:1px solid var(--rule);padding:2.5rem 0 3rem}
+.faq-title{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+.faq-title::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.faq-list{display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--rule);padding:1rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::after{content:'+'  ;font-family:var(--mono);font-size:16px;color:var(--ink3);transition:transform .15s}
+.faq-item.open .faq-q::after{content:'−'}
+.faq-a{font-size:12.5px;color:var(--ink2);line-height:1.75;margin-top:.75rem;display:none}
+.q-opt{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:6px 13px;border:1px solid var(--rule);border-radius:2px;background:var(--bg);color:var(--ink2);cursor:pointer;transition:all .15s}
+.q-opt:hover{border-color:var(--ink3);color:var(--ink)}
+.q-opt.selected{border-color:var(--blue);color:var(--blue);background:rgba(37,99,235,.06)}
+
+footer{max-width:960px;margin:0 auto;padding:1.5rem 2rem 3rem;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-logo{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+
+@media(max-width:680px){.plans{grid-template-columns:1fr}.pay-methods{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="n-logo">
+    <img src="logo.png" alt="EIP.AI"/>
+  </a>
+  <div class="n-r">
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← eip.ai</a>
+    <a href="builder.html">builder</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">pricing</div>
+    <h1>start free. scale as you build.</h1>
+    <p class="header-sub">EIP.AI funds itself through subscriptions — so the agent can keep building autonomously. every paid plan directly fuels the system.</p>
+    <div>
+      <div class="billing-toggle">
+        <button class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">monthly</button>
+        <button class="bt-opt" id="bt-annual" onclick="setBilling('annual')">annual</button>
+      </div>
+      <div class="billing-note" id="billing-note" style="display:none">✓ 2 months free with annual billing</div>
+    </div>
+  </div>
+
+  <!-- PLANS -->
+  <div class="plans">
+
+    <!-- FREE -->
+    <div class="plan">
+      <span class="plan-tag tag-free">free</span>
+      <div class="plan-name">EIP.AI</div>
+      <div class="plan-desc">explore the agent, follow its decisions, watch the council.</div>
+      <div class="price-row"><span class="price">$0</span><span class="price-period">/mo</span></div>
+      <div class="price-save" style="visibility:hidden">—</div>
+      <ul class="features">
+        <li class="feat">live agent demo</li>
+        <li class="feat">council sessions (view only)</li>
+        <li class="feat">project intelligence (basic)</li>
+        <li class="feat">public log access</li>
+        <li class="feat no">agent builder</li>
+        <li class="feat no">download agent code</li>
+        <li class="feat no">API access</li>
+        <li class="feat no">priority support</li>
+      </ul>
+      <a href="index.html" class="plan-btn btn-free">get started free</a>
+    </div>
+
+    <!-- GOLD -->
+    <div class="plan featured">
+      <span class="plan-tag tag-gold">EIP.AI 1 · gold</span>
+      <div class="plan-name">Gold</div>
+      <div class="plan-desc">build and deploy your own autonomous agent. full builder access.</div>
+      <div class="price-row">
+        <span class="price" id="gold-price">$9</span>
+        <span class="price-period">/mo</span>
+        <span class="price-orig" id="gold-orig" style="display:none">$13</span>
+      </div>
+      <div class="price-save" id="gold-save" style="visibility:hidden">—</div>
+      <ul class="features">
+        <li class="feat">everything in free</li>
+        <li class="feat">full agent builder access</li>
+        <li class="feat">download agent.js + .env</li>
+        <li class="feat">5 agent configs / month</li>
+        <li class="feat">project intelligence (full)</li>
+        <li class="feat">council participation</li>
+        <li class="feat">email support</li>
+        <li class="feat no">API access</li>
+      </ul>
+      <a href="#payment" class="plan-btn btn-gold" onclick="selectPlan('gold')">get gold →</a>
+    </div>
+
+    <!-- ULTRA -->
+    <div class="plan">
+      <span class="plan-tag tag-ultra">EIP.AI 2 · ultra</span>
+      <div class="plan-name">Ultra</div>
+      <div class="plan-desc">full platform. API access. unlimited agents. on-chain integration.</div>
+      <div class="price-row">
+        <span class="price" id="ultra-price">$29</span>
+        <span class="price-period">/mo</span>
+        <span class="price-orig" id="ultra-orig" style="display:none">$41</span>
+      </div>
+      <div class="price-save" id="ultra-save" style="visibility:hidden">—</div>
+      <ul class="features">
+        <li class="feat">everything in gold</li>
+        <li class="feat">unlimited agent configs</li>
+        <li class="feat">REST API access</li>
+        <li class="feat">on-chain agent deployment</li>
+        <li class="feat">real-time agent monitoring</li>
+        <li class="feat">marketplace early access</li>
+        <li class="feat">council voting rights</li>
+        <li class="feat">priority support + Discord</li>
+      </ul>
+      <a href="#payment" class="plan-btn btn-ultra" onclick="selectPlan('ultra')">get ultra →</a>
+    </div>
+
+  </div>
+
+  <!-- PLAN FINDER -->
+  <div style="border:1px solid var(--rule);border-radius:3px;padding:1.5rem;margin:2rem 0;background:var(--bg2)">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem">not sure which plan?</div>
+    <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:1.25rem">answer 2 questions:</div>
+
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:.6rem">what do you want to do?</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="q1-opts">
+        <button class="q-opt" onclick="selectQ(1,'watch')">👁 watch the agent</button>
+        <button class="q-opt" onclick="selectQ(1,'build')">🔨 build my own agent</button>
+        <button class="q-opt" onclick="selectQ(1,'deploy')">🚀 deploy on-chain + API</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:.6rem">your budget?</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="q2-opts">
+        <button class="q-opt" onclick="selectQ(2,'free')">$0 — just exploring</button>
+        <button class="q-opt" onclick="selectQ(2,'low')">under $15/mo</button>
+        <button class="q-opt" onclick="selectQ(2,'any')">no limit</button>
+      </div>
+    </div>
+
+    <div id="recommendation" style="display:none;padding:10px 14px;border-radius:3px;border:1px solid var(--rule);font-size:12.5px;color:var(--ink)"></div>
+  </div>
+  <div class="comparison">
+    <div class="comp-title">full comparison</div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>feature</th>
+          <th>free</th>
+          <th style="color:var(--gold)">gold $9</th>
+          <th style="color:var(--ultra)">ultra $29</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>live agent demo</td><td class="c-yes">✓</td><td class="c-yes">✓</td><td class="c-yes">✓</td></tr>
+        <tr><td>agent builder</td><td class="c-no">—</td><td class="c-gold">✓</td><td class="c-ultra">✓</td></tr>
+        <tr><td>download agent code</td><td class="c-no">—</td><td class="c-gold">✓</td><td class="c-ultra">✓</td></tr>
+        <tr><td>agent configs / month</td><td class="c-no">—</td><td class="c-gold">5</td><td class="c-ultra">unlimited</td></tr>
+        <tr><td>project intelligence</td><td class="c-yes">basic</td><td class="c-gold">full</td><td class="c-ultra">full + API</td></tr>
+        <tr><td>council participation</td><td class="c-no">view</td><td class="c-gold">participate</td><td class="c-ultra">vote</td></tr>
+        <tr><td>REST API</td><td class="c-no">—</td><td class="c-no">—</td><td class="c-ultra">✓</td></tr>
+        <tr><td>on-chain deployment</td><td class="c-no">—</td><td class="c-no">—</td><td class="c-ultra">✓</td></tr>
+        <tr><td>marketplace access</td><td class="c-no">—</td><td class="c-no">—</td><td class="c-ultra">early access</td></tr>
+        <tr><td>support</td><td class="c-no">—</td><td class="c-gold">email</td><td class="c-ultra">priority + Discord</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="payment-section" id="payment">
+    <div class="pay-title">payment methods</div>
+    <div class="pay-methods">
+      <div class="pay-card">
+        <div class="pay-badge badge-stripe">Stripe</div>
+        <div class="pay-card-title">Credit / Debit Card</div>
+        <div class="pay-card-sub">Visa, Mastercard, Amex. Instant activation. Cancel anytime. Powered by Stripe — your card data never touches our servers.</div>
+      </div>
+      <div class="pay-card">
+        <div class="pay-badge badge-crypto">on-chain</div>
+        <div class="pay-card-title">USDC / ETH on Base</div>
+        <div class="pay-card-sub">Pay with crypto on Base network. Monthly or annual. Wallet connects via MetaMask or WalletConnect. Instant on-chain confirmation.</div>
+      </div>
+    </div>
+
+    <!-- SELECTED PLAN -->
+    <div id="plan-checkout" style="display:none;border:1px solid var(--rule);border-radius:3px;padding:1.5rem;background:var(--bg2)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem">checkout</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--ink)" id="co-plan-name">—</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink3)" id="co-plan-price">—</div>
+        </div>
+        <div style="display:flex;gap:.75rem">
+          <button onclick="checkoutStripe()" style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#635bff;color:#fff;border:none;padding:9px 18px;border-radius:3px;cursor:pointer">pay with card →</button>
+          <button onclick="checkoutCrypto()" style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--green);color:#fff;border:none;padding:9px 18px;border-radius:3px;cursor:pointer">pay with crypto →</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--ink3)">⚠ payment integration coming soon — join waitlist to be notified at launch.</div>
+    </div>
+
+    <!-- WAITLIST -->
+    <div id="waitlist-form" style="border:1px solid var(--rule);border-radius:3px;padding:1.5rem;margin-top:1rem">
+      <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.4rem">join the waitlist</div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">payment launches soon. join to get notified + lock in launch pricing.</div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <input id="wl-email" type="email" placeholder="your@email.com" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none"/>
+        <select id="wl-plan" style="background:var(--bg);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;font-family:var(--mono);font-size:11px;color:var(--ink);outline:none;cursor:pointer">
+          <option value="gold">EIP.AI 1 · Gold $9/mo</option>
+          <option value="ultra">EIP.AI 2 · Ultra $29/mo</option>
+        </select>
+        <button onclick="joinWaitlist()" style="font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;padding:9px 18px;border-radius:3px;cursor:pointer">join →</button>
+      </div>
+      <div id="wl-msg" style="font-family:var(--mono);font-size:11px;margin-top:.75rem;display:none"></div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <div class="faq-title">faq</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">what does "funding the agent" mean?</div>
+        <div class="faq-a">EIP.AI is designed to be fully autonomous — meaning it needs to fund its own operations. Subscription revenue directly pays for compute, API costs, and the agent's on-chain transaction budget. The goal is for the agent to become self-sustaining through a mix of subscriptions and protocol fees.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">can I cancel anytime?</div>
+        <div class="faq-a">Yes. Monthly plans cancel at end of the current period. Annual plans can be cancelled with a prorated refund for unused months.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">what is the agent builder?</div>
+        <div class="faq-a">A chat-based interface where you describe your agent's purpose, strategy, and parameters. At the end, you get a working agent.js file and .env config you can deploy anywhere — Railway, Render, or your own server.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">what chain does the agent run on?</div>
+        <div class="faq-a">Base (Ethereum L2) by default. Ultra plan agents can be configured for Ethereum mainnet, Arbitrum, Optimism, or Polygon.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">why is pricing below market?</div>
+        <div class="faq-a">We're in early access. Founding members get launch pricing locked in forever. As the platform matures, prices will rise — but your plan never changes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="f-logo">EIP.AI · pricing</span>
+  <span class="f-note">founding member pricing · locked forever · eipagent.org</span>
+</footer>
+
+<script>
+// DARK MODE
+function toggleDark(){const d=document.documentElement.classList.toggle('dark');localStorage.setItem('eip_dark',d?'1':'0');document.getElementById('dbtn').textContent=d?'◐':'◑'}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐'}})();
+
+// BILLING TOGGLE
+let billing = 'monthly';
+function setBilling(type){
+  billing = type;
+  document.getElementById('bt-monthly').classList.toggle('on', type==='monthly');
+  document.getElementById('bt-annual').classList.toggle('on', type==='annual');
+  const note = document.getElementById('billing-note');
+  note.style.display = type==='annual' ? 'block' : 'none';
+
+  if(type==='annual'){
+    document.getElementById('gold-price').textContent = '$7';
+    document.getElementById('gold-orig').style.display = '';
+    document.getElementById('gold-save').textContent = '✓ save $24/yr';
+    document.getElementById('gold-save').style.visibility = 'visible';
+    document.getElementById('ultra-price').textContent = '$24';
+    document.getElementById('ultra-orig').style.display = '';
+    document.getElementById('ultra-save').textContent = '✓ save $60/yr';
+    document.getElementById('ultra-save').style.visibility = 'visible';
+  } else {
+    document.getElementById('gold-price').textContent = '$9';
+    document.getElementById('gold-orig').style.display = 'none';
+    document.getElementById('gold-save').style.visibility = 'hidden';
+    document.getElementById('ultra-price').textContent = '$29';
+    document.getElementById('ultra-orig').style.display = 'none';
+    document.getElementById('ultra-save').style.visibility = 'hidden';
+  }
+}
+
+// PLAN SELECT
+let selectedPlan = null;
+function selectPlan(plan){
+  selectedPlan = plan;
+  const prices = {gold:{monthly:'$9/mo',annual:'$7/mo'},ultra:{monthly:'$29/mo',annual:'$24/mo'}};
+  const names  = {gold:'EIP.AI 1 · Gold',ultra:'EIP.AI 2 · Ultra'};
+  document.getElementById('co-plan-name').textContent  = names[plan];
+  document.getElementById('co-plan-price').textContent = prices[plan][billing];
+  document.getElementById('plan-checkout').style.display = 'block';
+  document.getElementById('wl-plan').value = plan;
+  document.getElementById('plan-checkout').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function checkoutStripe(){
+  // Stripe integration goes here
+  alert('Stripe payment launching soon — join the waitlist below to be notified first.');
+}
+
+function checkoutCrypto(){
+  // Crypto payment integration goes here
+  alert('Crypto payment (USDC/ETH on Base) launching soon — join the waitlist below.');
+}
+
+// WAITLIST
+function joinWaitlist(){
+  const email = document.getElementById('wl-email').value.trim();
+  const plan  = document.getElementById('wl-plan').value;
+  const msg   = document.getElementById('wl-msg');
+  if(!email || !email.includes('@')){
+    msg.style.display='block';msg.style.color='var(--red, #dc2626)';
+    msg.textContent='please enter a valid email';return;
+  }
+  // In production: POST to backend
+  msg.style.display='block';msg.style.color='var(--green)';
+  msg.textContent=`✓ added to ${plan} waitlist — you'll be first to know.`;
+  document.getElementById('wl-email').value='';
+}
+
+// PLAN FINDER
+let q1 = null, q2 = null;
+function selectQ(q, val){
+  if(q===1){q1=val;document.querySelectorAll('#q1-opts .q-opt').forEach(b=>b.classList.toggle('selected',b.textContent.includes(val==='watch'?'watch':val==='build'?'build':'deploy')))}
+  if(q===2){q2=val;document.querySelectorAll('#q2-opts .q-opt').forEach(b=>b.classList.toggle('selected',b.textContent.includes(val==='free'?'$0':val==='low'?'$15':'no limit')))}
+  if(q1&&q2) showRecommendation();
+}
+function showRecommendation(){
+  const rec = document.getElementById('recommendation');
+  rec.style.display='block';
+  const plans = {
+    'watch-free':  {name:'Free',desc:'You just need the free plan. watch the agent, follow decisions, no cost.',btn:'get started free',href:'index.html',color:'var(--ink3)'},
+    'watch-low':   {name:'Free',desc:'Still free. everything you need to watch is included at $0.',btn:'get started free',href:'index.html',color:'var(--ink3)'},
+    'watch-any':   {name:'Free',desc:'Free tier covers watching. upgrade to Gold if you want to build.',btn:'get started free',href:'index.html',color:'var(--ink3)'},
+    'build-free':  {name:'Gold $9/mo',desc:'Builder requires Gold. at $9/mo it\'s the cheapest agent builder on the market.',btn:'get gold →',href:'#payment',color:'var(--gold)'},
+    'build-low':   {name:'Gold $9/mo',desc:'Gold is $9/mo — well within your budget. full builder, code download, 5 agents/mo.',btn:'get gold →',href:'#payment',color:'var(--gold)'},
+    'build-any':   {name:'Gold $9/mo',desc:'Gold covers everything you need for building. upgrade to Ultra when you need API or on-chain.',btn:'get gold →',href:'#payment',color:'var(--gold)'},
+    'deploy-free': {name:'Ultra $29/mo',desc:'On-chain deployment needs Ultra. at $29/mo it\'s still 70% below market.',btn:'get ultra →',href:'#payment',color:'var(--ultra)'},
+    'deploy-low':  {name:'Ultra $29/mo',desc:'Ultra is $29/mo. if that\'s too much, start with Gold at $9 and upgrade when ready.',btn:'get gold first →',href:'#payment',color:'var(--gold)'},
+    'deploy-any':  {name:'Ultra $29/mo',desc:'Ultra is your plan. API access, on-chain deployment, marketplace early access.',btn:'get ultra →',href:'#payment',color:'var(--ultra)'},
+  };
+  const key = `${q1}-${q2}`;
+  const p = plans[key] || plans['build-low'];
+  rec.style.borderColor = p.color;
+  rec.innerHTML = `<span style="font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:${p.color}">recommended: ${p.name}</span><br/><span style="font-size:12px;color:var(--ink2);margin-top:4px;display:block">${p.desc}</span><a href="${p.href}" onclick="${p.href.startsWith('#')?`selectPlan('${p.name.includes('Ultra')?'ultra':'gold'}')`:''}" style="display:inline-block;margin-top:8px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:${p.color};text-decoration:none;border-bottom:1px solid ${p.color};padding-bottom:1px">${p.btn}</a>`;
+}
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

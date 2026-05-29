@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Council</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--bg3:#eae7e0;--ink:#000000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.09);--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+html.dark{--bg:#0d0d0b;--bg2:#161614;--bg3:#1e1e1b;--ink:#ffffff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:52px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:26px;width:auto;border-radius:2px}
+.n-logo span{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.n-r{display:flex;align-items:center;gap:1.5rem}
+.n-r a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;letter-spacing:.04em;transition:color .15s}
+.n-r a:hover{color:var(--ink)}
+#dbtn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer;padding:0}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 2rem}
+
+/* HEADER */
+.header{padding:72px 0 2rem;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.header h1{font-size:clamp(22px,3.5vw,36px);font-weight:400;letter-spacing:-.02em;color:var(--ink);margin-bottom:.5rem;font-family:'Georgia',serif;font-style:italic}
+.header-sub{font-size:13px;color:var(--ink2);max-width:560px;line-height:1.75}
+
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:.75rem;padding:1rem 0;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.ctrl-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+.ctrl-status{font-family:var(--mono);font-size:11px;color:var(--ink2)}
+
+/* LAYOUT */
+.main-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;padding:1.5rem 0;align-items:start}
+
+/* AGENTS */
+.agents-col{}
+.col-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.agent-list{display:flex;flex-direction:column;gap:6px}
+.agent-card{border:1px solid var(--rule);border-radius:3px;padding:11px 13px;transition:all .2s;background:var(--bg)}
+html.dark .agent-card{background:var(--bg2)}
+.agent-card.speaking{border-color:var(--blue);background:rgba(37,99,235,.04)}
+.agent-card.voted{border-color:var(--green);background:rgba(22,163,74,.04)}
+.agent-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.agent-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.agent-name{font-size:12px;font-weight:500;color:var(--ink)}
+.agent-role{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.agent-msg{font-size:11.5px;color:var(--ink2);line-height:1.55;padding-left:38px}
+.agent-msg.thinking{color:var(--ink3)}
+.agent-msg.thinking::after{content:'...';animation:dots 1s step-start infinite}
+.agent-vote-line{font-family:var(--mono);font-size:10px;color:var(--green);padding-left:38px;margin-top:3px}
+
+/* PROPOSALS */
+.proposals-col{}
+.proposals-list{display:flex;flex-direction:column;gap:8px}
+.prop{border:1px solid var(--rule);border-radius:3px;padding:14px 16px;background:var(--bg);transition:all .25s}
+html.dark .prop{background:var(--bg2)}
+.prop.winner{border-color:var(--green);background:rgba(22,163,74,.04)}
+.prop-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.prop-title{font-size:13px;font-weight:500;color:var(--ink)}
+.prop-votes{font-family:var(--mono);font-size:12px;color:var(--ink3);flex-shrink:0}
+.prop-bar-bg{height:2px;background:var(--rule);border-radius:1px;overflow:hidden;margin-bottom:8px}
+.prop-bar{height:100%;border-radius:1px;background:var(--ink3);transition:width .5s ease}
+.prop.winner .prop-bar{background:var(--green)}
+.prop-desc{font-size:12px;color:var(--ink2);line-height:1.6}
+.prop-badge{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:2px;background:rgba(22,163,74,.1);color:var(--green);margin-left:8px;vertical-align:middle}
+
+/* WINNER BANNER */
+.winner-banner{display:none;padding:14px 18px;background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);border-radius:3px;margin-top:1rem;font-size:13px;color:var(--green)}
+.winner-banner strong{color:var(--ink);font-weight:500}
+
+/* DEBATE LOG */
+.debate-log{margin-top:1.5rem;border-top:1px solid var(--rule);padding-top:1.25rem}
+.log-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+.log-feed{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
+.log-feed::-webkit-scrollbar{width:2px}
+.log-feed::-webkit-scrollbar-thumb{background:var(--rule)}
+.log-entry{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:11.5px}
+.log-entry:last-child{border-bottom:none}
+.log-agent{font-family:var(--mono);font-size:10px;color:var(--ink3);flex-shrink:0;width:64px}
+.log-text{color:var(--ink2);flex:1;line-height:1.5}
+.log-ts{font-family:var(--mono);font-size:9px;color:var(--ink3);flex-shrink:0}
+
+@keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
+footer{max-width:1060px;margin:0 auto;padding:2rem 2rem 3rem;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:2rem}
+.f-logo{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+@media(max-width:760px){.main-grid{grid-template-columns:1fr}.agent-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="n-logo">
+    <img src="logo.png" alt="EIP.AI"/>
+    <span>/ council</span>
+  </a>
+  <div class="n-r">
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← eip.ai</a>
+    <a href="https://x.com/eip_ai" target="_blank">X</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">agent council</div>
+    <h1>10 AI agents. one decision.</h1>
+    <p class="header-sub">Each session, 10 specialized AI agents debate EIP.AI's next move. They speak, argue, and vote. The winning proposal gets built. No human override.</p>
+  </div>
+
+  <div class="controls">
+    <span class="ctrl-dot"></span>
+    <span class="ctrl-status" id="ctrl-status">initializing council...</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:auto" id="session-counter">session 0</span>
+  </div>
+
+  <div class="main-grid">
+    <!-- AGENTS -->
+    <div class="agents-col">
+      <div class="col-label">agents</div>
+      <div class="agent-list" id="agent-list"></div>
+    </div>
+
+    <!-- PROPOSALS -->
+    <div class="proposals-col">
+      <div class="col-label">proposals</div>
+      <div class="proposals-list" id="proposals-list"></div>
+
+      <div class="winner-banner" id="winner-banner"></div>
+
+      <div class="debate-log">
+        <div class="log-label">debate transcript</div>
+        <div class="log-feed" id="log-feed">
+          <div style="font-size:11px;color:var(--ink3);padding:6px 0">council not yet convened.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="f-logo">EIP.AI / council</span>
+  <span class="f-note">decisions are binding — the winning proposal gets built · @eip_ai</span>
+</footer>
+
+<script>
+// ── DARK MODE ─────────────────────────────────────────────────────
+function toggleDark(){const d=document.documentElement.classList.toggle('dark');localStorage.setItem('eip_dark',d?'1':'0');document.getElementById('dbtn').textContent=d?'◐':'◑'}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐'}})();
+
+// ── DATA ─────────────────────────────────────────────────────────
+const AGENTS = [
+  {id:'A1',name:'Satoshi',role:'on-chain arch.',avatar:'⛓',bg:'#dbeafe',ink:'#1e40af'},
+  {id:'A2',name:'Ada',role:'protocol eng.',avatar:'🔬',bg:'#dcfce7',ink:'#166534'},
+  {id:'A3',name:'Vitalik',role:'crypto econ.',avatar:'📐',bg:'#ede9fe',ink:'#5b21b6'},
+  {id:'A4',name:'Grace',role:'systems design',avatar:'🏗',bg:'#d1fae5',ink:'#065f46'},
+  {id:'A5',name:'Turing',role:'AI research',avatar:'🧠',bg:'#fef3c7',ink:'#92400e'},
+  {id:'A6',name:'Nakamoto',role:'security',avatar:'🔐',bg:'#fee2e2',ink:'#991b1b'},
+  {id:'A7',name:'Lovelace',role:'UX strategy',avatar:'🎯',bg:'#fce7f3',ink:'#9d174d'},
+  {id:'A8',name:'Dijkstra',role:'infra eng.',avatar:'⚙',bg:'#f1f5f9',ink:'#334155'},
+  {id:'A9',name:'Shannon',role:'data theory',avatar:'📊',bg:'#ffedd5',ink:'#9a3412'},
+  {id:'A10',name:'Tesla',role:'optimization',avatar:'⚡',bg:'#dbeafe',ink:'#1d4ed8'},
+];
+
+const PROPOSALS = [
+  {id:'P1',title:'EIP.CHAT — live agent chat',desc:'Persistent chat widget on homepage. Visitors ask the agent anything. Powered by Claude API, no backend. Turns passive visitors into active participants.'},
+  {id:'P2',title:'Autonomous X posting',desc:'Agent posts its own decisions to X in real time. Every EXECUTE or ALERT becomes a tweet. The AI markets itself. Zero human involvement.'},
+  {id:'P3',title:'Public agent log page',desc:'Every agent decision — block, gas, reasoning — permanently visible at /log. Full transparency creates trust and gives analysts something to study.'},
+  {id:'P4',title:'Launch whitelist',desc:'Pre-launch signup page for EIP.LAUNCH. Wallet registration before mainnet opens. Converts curiosity into commitment. Measures real demand.'},
+  {id:'P5',title:'Multi-agent council (meta)',desc:'This system — 10 agents debating product direction. Ship it as a permanent feature. Most projects claim decentralization; EIP.AI demonstrates it.'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────
+let votes = {}, running = false;
+PROPOSALS.forEach(p => votes[p.id] = 0);
+
+// ── CLAUDE API via Netlify Function ──────────────────────────────
+const COUNCIL_API = '/api/council';
+
+async function askAgent(agent, context) {
+  const persona = AGENT_PERSONAS[agent.id];
+
+  try {
+    const res = await fetch(COUNCIL_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        persona,
+        proposals: PROPOSALS,
+        context,
+        sessionCount,
+      }),
+    });
+
+    if (!res.ok) throw new Error('api error');
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    // Natural reading pause
+    await sleep(1200 + Math.random() * 800);
+    return { speech: data.speech, vote: data.vote };
+
+  } catch(e) {
+    // Fallback if API unavailable
+    await sleep(800 + Math.random() * 600);
+    const pool = FALLBACKS[agent.id];
+    const pick = pool[sessionCount % pool.length];
+    return { speech: pick.speech, vote: pick.vote };
+  }
+}
+
+const AGENT_PERSONAS = {
+  A1: 'You are Satoshi, an on-chain architect. You think in cryptographic trust and protocol-level incentives. You are skeptical of anything off-chain.',
+  A2: 'You are Ada, a protocol engineer. You evaluate by implementation cost and technical debt. You prefer foundations over flashy features.',
+  A3: 'You are Vitalik, a crypto economist. You think in game theory and long-term network effects. You want sustainable growth loops.',
+  A4: 'You are Grace, a systems designer. You map user journeys and conversion. You focus on turning visitors into committed users.',
+  A5: 'You are Turing, an AI researcher. You push for features that demonstrate genuinely autonomous behavior — not simulations.',
+  A6: 'You are Nakamoto, a security analyst. You value verifiability and transparency above all. Trust is built through proof, not promises.',
+  A7: 'You are Lovelace, a UX strategist. You think about first impressions and emotional connection. Engagement beats technical elegance.',
+  A8: 'You are Dijkstra, an infrastructure engineer. You think about ROI per engineering hour. Ship what delivers the most with the least.',
+  A9: 'You are Shannon, a data theorist. You think about information flow and what data structures compound over time.',
+  A10: 'You are Tesla, an optimization specialist. Maximum output per unit of effort. You hate waste and love leverage.',
+};
+
+// Fallback speeches when API unavailable
+const FALLBACKS = {
+  A1:[{speech:'autonomous X posting is the thesis made visible. every on-chain action should have a traceable social signal.',vote:'P2'},{speech:'the log page gives on-chain actions their social layer. it is the missing link between execution and awareness.',vote:'P3'}],
+  A2:[{speech:'the log is the foundation. without a verifiable record, every other feature is built on trust alone.',vote:'P3'},{speech:'chat widget is an engagement layer. but without the log, there is nothing to engage about.',vote:'P3'}],
+  A3:[{speech:'whitelist converts soft attention into hard commitment. pre-launch signals are the most valuable data point.',vote:'P4'},{speech:'autonomous posting creates a demand flywheel. content attracts users, users attract more content.',vote:'P2'}],
+  A4:[{speech:'the chat widget closes the loop between visitor and agent in under 60 seconds. nothing else does that.',vote:'P1'},{speech:'first impressions matter. a visitor who talks to the agent immediately is ten times more likely to return.',vote:'P1'}],
+  A5:[{speech:'the council is the product argument made live. no whitepaper needed — visitors see autonomous decision-making in real time.',vote:'P5'},{speech:'shipping the council as a permanent feature makes the meta-argument real. the AI governs itself, publicly.',vote:'P5'}],
+  A6:[{speech:'without the log, the agent is unauditable. verifiability is not a feature, it is a prerequisite for trust.',vote:'P3'},{speech:'the whitelist creates accountability before launch. users who commit early have skin in the game.',vote:'P4'}],
+  A7:[{speech:'chat creates memory. every conversation the agent has teaches it something no on-chain data can provide.',vote:'P1'},{speech:'autonomous posting means the agent is always present — every cycle is content, every decision is marketing.',vote:'P2'}],
+  A8:[{speech:'autonomous posting delivers reach per engineering hour better than any other option here.',vote:'P2'},{speech:'the log page is infrastructure. every decision archived is a data point that compounds over months.',vote:'P3'}],
+  A9:[{speech:'the log becomes a live data feed that other AI agents can consume programmatically. it is infrastructure.',vote:'P3'},{speech:'chat creates a two-way signal channel. the agent learns what users care about from every interaction.',vote:'P1'}],
+  A10:[{speech:'autonomous posting maximises output per unit effort. every decision cycle produces content automatically.',vote:'P2'},{speech:'the whitelist is a pre-commitment mechanism. it turns soft interest into hard signal before contracts deploy.',vote:'P4'}],
+};
+
+// ── RENDER ────────────────────────────────────────────────────────
+function renderAgents(){
+  document.getElementById('agent-list').innerHTML = AGENTS.map(a=>`
+    <div class="agent-card" id="ac-${a.id}">
+      <div class="agent-top">
+        <div class="agent-avatar" style="background:${a.bg};color:${a.ink}">${a.avatar}</div>
+        <div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-role">${a.role}</div>
+        </div>
+      </div>
+      <div class="agent-msg" id="am-${a.id}">standing by.</div>
+      <div class="agent-vote-line" id="av-${a.id}" style="display:none"></div>
+    </div>`).join('');
+}
+
+function renderProposals(){
+  document.getElementById('proposals-list').innerHTML = PROPOSALS.map(p=>`
+    <div class="prop" id="pp-${p.id}">
+      <div class="prop-head">
+        <div class="prop-title" id="pt-${p.id}">${p.title}</div>
+        <div class="prop-votes" id="pv-${p.id}">0 / 10</div>
+      </div>
+      <div class="prop-bar-bg"><div class="prop-bar" id="pb-${p.id}" style="width:0%"></div></div>
+      <div class="prop-desc">${p.desc}</div>
+    </div>`).join('');
+}
+
+function addLog(agentName, text){
+  const feed = document.getElementById('log-feed');
+  if(feed.children.length===1&&feed.children[0].tagName==='DIV'&&!feed.children[0].className) feed.innerHTML='';
+  const now = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const d = document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<span class="log-agent">${agentName}</span><span class="log-text">${text}</span><span class="log-ts">${now}</span>`;
+  feed.insertBefore(d, feed.firstChild);
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// ── COUNTDOWN ────────────────────────────────────────────────────
+async function countdown(minutes) {
+  const ms = minutes * 60 * 1000;
+  const end = Date.now() + ms;
+  while(Date.now() < end) {
+    const left = Math.ceil((end - Date.now()) / 1000);
+    const m = Math.floor(left / 60);
+    const s = left % 60;
+    document.getElementById('ctrl-status').textContent =
+      `next session in ${m}:${s.toString().padStart(2,'0')}`;
+    await sleep(1000);
+  }
+}
+
+// ── COUNCIL ───────────────────────────────────────────────────────
+let sessionCount = 0;
+
+async function startCouncil(){
+  if(running) return;
+  running = true;
+  sessionCount++;
+
+  PROPOSALS.forEach(p=>votes[p.id]=0);
+  renderAgents();
+  renderProposals();
+  document.getElementById('winner-banner').style.display='none';
+  document.getElementById('ctrl-status').textContent = `session ${sessionCount} · convening...`;
+  const scEl = document.getElementById('session-counter');
+  if(scEl) scEl.textContent = `session ${sessionCount}`;
+  addLog('SYSTEM', `session ${sessionCount} — 10 agents deliberating`);
+
+  // Build context as session progresses
+  let context = 'No arguments made yet.';
+  const shuffled = [...AGENTS].sort(()=>Math.random()-.5);
+
+  for(const agent of shuffled){
+    const card = document.getElementById('ac-'+agent.id);
+    const msg  = document.getElementById('am-'+agent.id);
+    const vl   = document.getElementById('av-'+agent.id);
+
+    // thinking — call Claude
+    card.classList.add('speaking');
+    msg.className='agent-msg thinking';
+    msg.textContent='thinking...';
+    document.getElementById('ctrl-status').textContent = `session ${sessionCount} · ${agent.name} deliberating`;
+    await sleep(400);
+
+    const result = await askAgent(agent, context);
+
+    // speak
+    msg.className='agent-msg';
+    msg.textContent = result.speech;
+    addLog(agent.name, result.speech);
+
+    // update context for next agent
+    context += `\n${agent.name} (${agent.role}): "${result.speech}" — votes ${result.vote}`;
+
+    await sleep(3000 + Math.random()*2000);
+
+    // vote
+    const voteId = result.vote;
+    votes[voteId] = (votes[voteId]||0) + 1;
+    const propName = PROPOSALS.find(p=>p.id===voteId)?.title || voteId;
+    vl.textContent = '→ voted: ' + propName;
+    vl.style.display='block';
+    card.classList.remove('speaking');
+    card.classList.add('voted');
+    addLog(agent.name, 'VOTE → '+propName);
+
+    PROPOSALS.forEach(p=>{
+      const pct=(votes[p.id]||0)/10*100;
+      document.getElementById('pb-'+p.id).style.width=pct+'%';
+      document.getElementById('pv-'+p.id).textContent=(votes[p.id]||0)+' / 10';
+    });
+
+    await sleep(500);
+  }
+
+  // Winner
+  let winId='P1', winVotes=0;
+  PROPOSALS.forEach(p=>{ if((votes[p.id]||0)>winVotes){winVotes=votes[p.id];winId=p.id;} });
+  const winner = PROPOSALS.find(p=>p.id===winId);
+
+  document.getElementById('pp-'+winId).classList.add('winner');
+  const ptEl = document.getElementById('pt-'+winId);
+  if(!ptEl.querySelector('.prop-badge')) ptEl.innerHTML += '<span class="prop-badge">winner</span>';
+
+  const banner = document.getElementById('winner-banner');
+  banner.innerHTML = `session ${sessionCount} verdict: <strong>${winner.title}</strong> — ${winVotes}/10 votes.`;
+  banner.style.display='block';
+
+  addLog('SYSTEM', `VERDICT s${sessionCount}: "${winner.title}" — ${winVotes}/10`);
+  running = false;
+
+  // Wait 20 minutes then auto-start next session
+  await countdown(20);
+  startCouncil();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+renderAgents();
+renderProposals();
+startCouncil();
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

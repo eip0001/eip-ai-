@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Hardhat artifacts (generated on compile)
+artifacts/
+cache/
+typechain-types/
+
+# Deploy output
+deployment.json
+
+# OS
+.DS_Store
+Thumbs.db

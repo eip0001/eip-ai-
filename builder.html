@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Agent Builder</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--bg3:#eae7e0;--ink:#000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.09);--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+html.dark{--bg:#0d0d0b;--bg2:#161614;--bg3:#1e1e1b;--ink:#fff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+html.dark .panel,html.dark .tpl-card,html.dark .field input,html.dark .field select,html.dark .field textarea{background:var(--bg2)}
+html.dark .code-box{background:#0a0a08}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 2rem}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:24px;border-radius:2px}
+.n-logo span{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.n-r{display:flex;align-items:center;gap:1.5rem}
+.n-r a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;transition:color .15s}
+.n-r a:hover{color:var(--ink)}
+#dbtn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer}
+
+.wrap{max-width:1240px;margin:0 auto;padding:78px 2rem 3rem}
+
+/* HEADER */
+.header{margin-bottom:1.5rem}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.header h1{font-size:clamp(22px,3.5vw,34px);font-weight:300;letter-spacing:-.02em;font-family:'Georgia',serif;font-style:italic;margin-bottom:.4rem}
+.header-sub{font-size:13px;color:var(--ink2);max-width:560px;line-height:1.7}
+
+/* STEP TABS */
+.steps{display:flex;gap:2px;margin-bottom:1.5rem;border-bottom:1px solid var(--rule)}
+.step{padding:10px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px}
+.step:hover{color:var(--ink2)}
+.step.on{color:var(--ink);border-bottom-color:var(--ink)}
+.step-num{width:18px;height:18px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:#fff}
+
+/* LAYOUT */
+.builder-layout{display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start}
+
+/* PANELS */
+.panel{background:var(--bg);border:1px solid var(--rule);border-radius:4px;padding:1.5rem;display:none}
+.panel.on{display:block}
+.panel-title{font-size:15px;font-weight:500;margin-bottom:.35rem}
+.panel-desc{font-size:12px;color:var(--ink3);margin-bottom:1.25rem}
+
+/* TEMPLATES */
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tpl-card{border:1px solid var(--rule);border-radius:4px;padding:1rem;cursor:pointer;transition:all .15s;background:var(--bg);position:relative}
+.tpl-card:hover{border-color:var(--ink3)}
+.tpl-card.sel{border-color:var(--blue);background:rgba(37,99,235,.04)}
+.tpl-card.sel::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--blue);font-size:12px}
+.tpl-icon{font-size:20px;margin-bottom:8px}
+.tpl-name{font-size:13px;font-weight:500;margin-bottom:4px}
+.tpl-tag{font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-bottom:8px;display:inline-block}
+.tag-trade{color:var(--green);background:rgba(22,163,74,.08)}
+.tag-monitor{color:var(--blue);background:rgba(37,99,235,.08)}
+.tag-social{color:var(--purple);background:rgba(124,58,237,.08)}
+.tpl-desc{font-size:11px;color:var(--ink3);line-height:1.55}
+
+/* FIELDS */
+.field{margin-bottom:1.1rem}
+.field-label{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px;display:block}
+.field-hint{font-size:11px;color:var(--ink3);margin-top:4px;line-height:1.5}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
+.field textarea{font-family:var(--mono);font-size:12px;resize:vertical;min-height:64px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* TOGGLES */
+.toggle-group{display:flex;flex-direction:column;gap:8px}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;cursor:pointer;transition:all .15s}
+.toggle:hover{border-color:var(--ink3)}
+.toggle.on{border-color:var(--blue);background:rgba(37,99,235,.04)}
+.toggle-info{}
+.toggle-name{font-size:13px;font-weight:500}
+.toggle-desc{font-size:11px;color:var(--ink3);margin-top:1px}
+.toggle-switch{width:36px;height:20px;border-radius:20px;background:var(--rule);position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on .toggle-switch{background:var(--blue)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle.on .toggle-switch::after{transform:translateX(16px)}
+
+/* SLIDER */
+.slider-wrap{display:flex;align-items:center;gap:12px}
+.slider-wrap input[type=range]{flex:1;accent-color:var(--blue)}
+.slider-val{font-family:var(--mono);font-size:12px;color:var(--ink);min-width:60px;text-align:right}
+
+/* NAV BUTTONS */
+.panel-nav{display:flex;justify-content:space-between;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:9px 18px;border-radius:3px;cursor:pointer;transition:all .15s;border:none}
+.btn-next{background:var(--ink);color:var(--bg)}
+.btn-next:hover{opacity:.85}
+.btn-back{background:none;color:var(--ink2);border:1px solid var(--rule)}
+.btn-back:hover{color:var(--ink);border-color:var(--ink3)}
+
+/* PREVIEW (right) */
+.preview{position:sticky;top:78px}
+.pv-tabs{display:flex;border:1px solid var(--rule);border-bottom:none;border-radius:4px 4px 0 0;overflow:hidden}
+.pvtab{flex:1;padding:9px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);cursor:pointer;text-align:center;background:var(--bg2);transition:all .15s;border-bottom:2px solid transparent}
+.pvtab.on{color:var(--blue);background:var(--bg);border-bottom-color:var(--blue)}
+.pv-body{border:1px solid var(--rule);border-radius:0 0 4px 4px;overflow:hidden}
+.code-box{background:#0d0d0b;max-height:440px;overflow:auto}
+.code-head{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#161614;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0}
+.code-title{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,237,230,.4)}
+.copy-btn{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,237,230,.4);background:none;border:none;cursor:pointer}
+.copy-btn:hover{color:rgba(240,237,230,.8)}
+.code-body{padding:12px;font-family:var(--mono);font-size:10.5px;line-height:1.65;color:rgba(240,237,230,.7);white-space:pre;overflow-x:auto}
+.summary-box{padding:1rem;background:var(--bg)}
+.sum-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--rule)}
+.sum-row:last-child{border-bottom:none}
+.sum-row span:first-child{color:var(--ink3)}
+.sum-row span:last-child{color:var(--ink);font-family:var(--mono);font-size:11px;text-align:right;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.dl-section{margin-top:1rem;display:flex;flex-direction:column;gap:6px}
+.dl-btn{width:100%;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;padding:11px;border-radius:3px;cursor:pointer;transition:opacity .15s}
+.dl-btn:hover{opacity:.85}
+.dl-btn.sec{background:none;color:var(--ink2);border:1px solid var(--rule)}
+.dl-btn.sec:hover{color:var(--ink);border-color:var(--ink3)}
+.pv-status{font-family:var(--mono);font-size:10px;color:var(--ink3);text-align:center;padding:8px;border:1px solid var(--rule);border-top:none}
+
+@media(max-width:920px){.builder-layout{grid-template-columns:1fr}.preview{position:static}.tpl-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="n-logo"><img src="logo.png" alt="EIP.AI"/><span>/ builder</span></a>
+  <div class="n-r">
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← eip.ai</a>
+    <a href="pricing.html">plans</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">agent builder</div>
+    <h1>build your autonomous agent.</h1>
+    <p class="header-sub">Pick a template, customize every parameter, watch the code update live. Download a working agent you can deploy in minutes.</p>
+  </div>
+
+  <div class="steps" id="steps">
+    <div class="step on" data-step="0" onclick="goStep(0)"><span class="step-num">1</span> template</div>
+    <div class="step" data-step="1" onclick="goStep(1)"><span class="step-num">2</span> identity</div>
+    <div class="step" data-step="2" onclick="goStep(2)"><span class="step-num">3</span> strategy</div>
+    <div class="step" data-step="3" onclick="goStep(3)"><span class="step-num">4</span> safety</div>
+    <div class="step" data-step="4" onclick="goStep(4)"><span class="step-num">5</span> deploy</div>
+  </div>
+
+  <div class="builder-layout">
+    <!-- LEFT: PANELS -->
+    <div>
+      <!-- STEP 0: TEMPLATE -->
+      <div class="panel on" data-panel="0">
+        <div class="panel-title">choose a starting template</div>
+        <div class="panel-desc">Each template comes preconfigured. You can customize everything in the next steps.</div>
+        <div class="tpl-grid" id="tpl-grid"></div>
+        <div class="panel-nav">
+          <span></span>
+          <button class="btn btn-next" onclick="goStep(1)">next: identity →</button>
+        </div>
+      </div>
+
+      <!-- STEP 1: IDENTITY -->
+      <div class="panel" data-panel="1">
+        <div class="panel-title">agent identity</div>
+        <div class="panel-desc">Give your agent a name and define what it does.</div>
+        <div class="field">
+          <label class="field-label">agent name</label>
+          <input id="f-name" placeholder="e.g. Gas Oracle, Arbitrage Scout" oninput="agent.name=this.value;render()"/>
+        </div>
+        <div class="field">
+          <label class="field-label">what does it do?</label>
+          <textarea id="f-role" placeholder="e.g. monitors gas prices on Base and alerts when optimal for execution" oninput="agent.role=this.value;render()"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">blockchain</label>
+          <select id="f-chain" onchange="agent.chain=this.value;render()">
+            <option value="base">Base</option>
+            <option value="ethereum">Ethereum</option>
+            <option value="arbitrum">Arbitrum</option>
+            <option value="optimism">Optimism</option>
+            <option value="polygon">Polygon</option>
+          </select>
+        </div>
+        <div class="panel-nav">
+          <button class="btn btn-back" onclick="goStep(0)">← back</button>
+          <button class="btn btn-next" onclick="goStep(2)">next: strategy →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: STRATEGY -->
+      <div class="panel" data-panel="2">
+        <div class="panel-title">decision strategy</div>
+        <div class="panel-desc">Define how your agent decides when to act. Toggle the capabilities it needs.</div>
+        <div class="field">
+          <label class="field-label">strategy description</label>
+          <textarea id="f-strategy" placeholder="e.g. execute when gas < 0.003 gwei and mempool is quiet" oninput="agent.strategy=this.value;render()"></textarea>
+          <div class="field-hint">this is fed to the AI reasoning layer — be specific about conditions</div>
+        </div>
+        <div class="field">
+          <label class="field-label">capabilities</label>
+          <div class="toggle-group">
+            <div class="toggle" id="cap-execute" onclick="toggleCap('execute',this)">
+              <div class="toggle-info"><div class="toggle-name">on-chain execution</div><div class="toggle-desc">send real transactions</div></div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="toggle on" id="cap-monitor" onclick="toggleCap('monitor',this)">
+              <div class="toggle-info"><div class="toggle-name">monitoring</div><div class="toggle-desc">watch chain conditions, gas, mempool</div></div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="toggle" id="cap-deep" onclick="toggleCap('deep',this)">
+              <div class="toggle-info"><div class="toggle-name">deep AI reasoning</div><div class="toggle-desc">Claude analysis on complex decisions</div></div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="toggle" id="cap-tweet" onclick="toggleCap('tweet',this)">
+              <div class="toggle-info"><div class="toggle-name">X / Twitter posting</div><div class="toggle-desc">auto-post decisions to social</div></div>
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-nav">
+          <button class="btn btn-back" onclick="goStep(1)">← back</button>
+          <button class="btn btn-next" onclick="goStep(3)">next: safety →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: SAFETY -->
+      <div class="panel" data-panel="3">
+        <div class="panel-title">safety limits</div>
+        <div class="panel-desc">Hard limits the agent can never exceed. Start conservative.</div>
+        <div class="field">
+          <label class="field-label">max ETH per transaction</label>
+          <div class="slider-wrap">
+            <input type="range" id="f-maxtx" min="0.001" max="0.1" step="0.001" value="0.005" oninput="agent.maxTxEth=this.value;document.getElementById('maxtx-val').textContent=this.value+' ETH';render()"/>
+            <span class="slider-val" id="maxtx-val">0.005 ETH</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">max gas price (gwei)</label>
+          <div class="slider-wrap">
+            <input type="range" id="f-maxgas" min="0.001" max="0.05" step="0.001" value="0.01" oninput="agent.maxGas=this.value;document.getElementById('maxgas-val').textContent=this.value+' gwei';render()"/>
+            <span class="slider-val" id="maxgas-val">0.01 gwei</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">scan interval</label>
+          <div class="slider-wrap">
+            <input type="range" id="f-interval" min="15" max="300" step="15" value="60" oninput="agent.interval=this.value;document.getElementById('interval-val').textContent=this.value+'s';render()"/>
+            <span class="slider-val" id="interval-val">60s</span>
+          </div>
+          <div class="field-hint">how often the agent checks the chain</div>
+        </div>
+        <div class="field">
+          <label class="field-label">treasury address (fees forward here)</label>
+          <input id="f-treasury" value="0x78196D00189d3FeEaD2Fba8c4B5e5d5F2b6fb0c9" oninput="agent.treasury=this.value;render()"/>
+        </div>
+        <div class="panel-nav">
+          <button class="btn btn-back" onclick="goStep(2)">← back</button>
+          <button class="btn btn-next" onclick="goStep(4)">next: deploy →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: DEPLOY -->
+      <div class="panel" data-panel="4">
+        <div class="panel-title">deploy your agent</div>
+        <div class="panel-desc">Your agent is ready. Download the package and deploy in 3 steps.</div>
+        <div class="field">
+          <label class="field-label">deployment guide</label>
+          <div style="font-size:12px;color:var(--ink2);line-height:1.8;padding:12px;border:1px solid var(--rule);border-radius:3px;background:var(--bg2)">
+            <strong>1.</strong> Download the package below<br/>
+            <strong>2.</strong> Create a new wallet for the agent, fund it with small amount<br/>
+            <strong>3.</strong> Add your keys to <code style="font-family:var(--mono);font-size:11px">.env</code>, run <code style="font-family:var(--mono);font-size:11px">npm install && npm start</code><br/>
+            <strong>4.</strong> Deploy to Railway / Render for 24/7 uptime
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">need it hosted? upgrade to Ultra</label>
+          <div style="font-size:12px;color:var(--ink3);padding:12px;border:1px solid var(--rule);border-radius:3px">
+            EIP.AI Ultra ($29/mo) deploys your agent on-chain for you — no server setup needed. <a href="pricing.html" style="color:var(--blue);text-decoration:none">view plans →</a>
+          </div>
+        </div>
+        <div class="panel-nav">
+          <button class="btn btn-back" onclick="goStep(3)">← back</button>
+          <button class="btn btn-next" onclick="downloadAll()">↓ download package</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: LIVE PREVIEW -->
+    <div class="preview">
+      <div class="pv-tabs">
+        <div class="pvtab on" onclick="pvTab('summary',this)">summary</div>
+        <div class="pvtab" onclick="pvTab('code',this)">agent.js</div>
+        <div class="pvtab" onclick="pvTab('env',this)">.env</div>
+      </div>
+      <div class="pv-body">
+        <div id="pv-content"></div>
+      </div>
+      <div class="pv-status" id="pv-status">live preview · updates as you build</div>
+      <div class="dl-section">
+        <button class="dl-btn" onclick="downloadAll()">↓ download full package</button>
+        <button class="dl-btn sec" onclick="downloadCode()">agent.js</button>
+        <button class="dl-btn sec" onclick="downloadEnv()">.env</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DARK ──────────────────────────────────────────────────────────
+function toggleDark(){const d=document.documentElement.classList.toggle('dark');localStorage.setItem('eip_dark',d?'1':'0');document.getElementById('dbtn').textContent=d?'◐':'◑'}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐'}})();
+
+// ── STATE ─────────────────────────────────────────────────────────
+const agent={name:'',role:'',chain:'base',strategy:'',maxTxEth:'0.005',maxGas:'0.01',interval:'60',deepInterval:'15',treasury:'0x78196D00189d3FeEaD2Fba8c4B5e5d5F2b6fb0c9',caps:{execute:false,monitor:true,deep:false,tweet:false}};
+let curStep=0, pvCur='summary', selTpl=null;
+const RPC={base:'https://mainnet.base.org',ethereum:'https://eth.llamarpc.com',arbitrum:'https://arb1.arbitrum.io/rpc',optimism:'https://mainnet.optimism.io',polygon:'https://polygon-rpc.com'};
+
+// ── TEMPLATES ─────────────────────────────────────────────────────
+const TEMPLATES=[
+  {id:'gas',icon:'⛽',name:'Gas Oracle',tag:'monitor',tagClass:'tag-monitor',desc:'Monitors gas prices, alerts when optimal for execution.',
+   preset:{name:'Gas Oracle',role:'monitors gas prices on the chain and signals when conditions are optimal for low-cost execution',strategy:'alert when gas drops below 0.003 gwei; track 5-block moving average for trend detection',caps:{execute:false,monitor:true,deep:true,tweet:false}}},
+  {id:'arb',icon:'⚖',name:'Arbitrage Scout',tag:'trade',tagClass:'tag-trade',desc:'Detects price differences across DEXs, executes when profitable.',
+   preset:{name:'Arbitrage Scout',role:'scans DEX prices for arbitrage opportunities and executes trades when profit exceeds gas cost',strategy:'execute when price spread > 0.5% across pools and gas < 0.005 gwei; verify slippage before tx',caps:{execute:true,monitor:true,deep:true,tweet:false}}},
+  {id:'wallet',icon:'👁',name:'Wallet Watcher',tag:'monitor',tagClass:'tag-monitor',desc:'Tracks specific wallets, alerts on large movements.',
+   preset:{name:'Wallet Watcher',role:'monitors target wallets and alerts on significant on-chain movements',strategy:'alert when tracked wallet sends > 1 ETH or interacts with new contract',caps:{execute:false,monitor:true,deep:false,tweet:true}}},
+  {id:'yield',icon:'🌾',name:'Yield Hunter',tag:'trade',tagClass:'tag-trade',desc:'Finds best yield opportunities, auto-compounds.',
+   preset:{name:'Yield Hunter',role:'identifies highest-yield opportunities across protocols and reallocates capital',strategy:'move funds when APY differential > 3% and TVL is stable; compound rewards weekly',caps:{execute:true,monitor:true,deep:true,tweet:false}}},
+  {id:'social',icon:'📡',name:'Signal Broadcaster',tag:'social',tagClass:'tag-social',desc:'Posts on-chain events and decisions to X automatically.',
+   preset:{name:'Signal Broadcaster',role:'detects notable on-chain events and broadcasts them to X automatically',strategy:'post when significant price moves, large txs, or new protocol launches detected',caps:{execute:false,monitor:true,deep:true,tweet:true}}},
+  {id:'custom',icon:'⚙',name:'Custom Agent',tag:'monitor',tagClass:'tag-monitor',desc:'Start from scratch. Full control over every parameter.',
+   preset:{name:'',role:'',strategy:'',caps:{execute:false,monitor:true,deep:false,tweet:false}}},
+];
+
+function renderTemplates(){
+  document.getElementById('tpl-grid').innerHTML=TEMPLATES.map(t=>`
+    <div class="tpl-card${selTpl===t.id?' sel':''}" onclick="selectTemplate('${t.id}')">
+      <div class="tpl-icon">${t.icon}</div>
+      <span class="tpl-tag ${t.tagClass}">${t.tag}</span>
+      <div class="tpl-name">${t.name}</div>
+      <div class="tpl-desc">${t.desc}</div>
+    </div>`).join('');
+}
+
+function selectTemplate(id){
+  selTpl=id;
+  const t=TEMPLATES.find(x=>x.id===id);
+  if(t&&t.preset){
+    agent.name=t.preset.name;
+    agent.role=t.preset.role;
+    agent.strategy=t.preset.strategy;
+    agent.caps={...t.preset.caps};
+    // sync UI
+    document.getElementById('f-name').value=agent.name;
+    document.getElementById('f-role').value=agent.role;
+    document.getElementById('f-strategy').value=agent.strategy;
+    ['execute','monitor','deep','tweet'].forEach(c=>{
+      document.getElementById('cap-'+c).classList.toggle('on',agent.caps[c]);
+    });
+  }
+  renderTemplates();
+  render();
+}
+
+// ── STEPS ─────────────────────────────────────────────────────────
+function goStep(n){
+  curStep=n;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',+p.dataset.panel===n));
+  document.querySelectorAll('.step').forEach(s=>{
+    const sn=+s.dataset.step;
+    s.classList.toggle('on',sn===n);
+    s.classList.toggle('done',sn<n);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── CAPABILITIES ──────────────────────────────────────────────────
+function toggleCap(cap,el){
+  agent.caps[cap]=!agent.caps[cap];
+  el.classList.toggle('on',agent.caps[cap]);
+  render();
+}
+
+// ── PREVIEW TABS ──────────────────────────────────────────────────
+function pvTab(tab,el){pvCur=tab;document.querySelectorAll('.pvtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');render();}
+
+// ── RENDER ────────────────────────────────────────────────────────
+function render(){
+  const c=document.getElementById('pv-content');
+  if(pvCur==='summary')c.innerHTML=renderSummary();
+  else if(pvCur==='code')c.innerHTML=`<div class="code-box"><div class="code-head"><span class="code-title">agent.js</span><button class="copy-btn" onclick="navigator.clipboard.writeText(genCode())">copy</button></div><div class="code-body">${esc(genCode())}</div></div>`;
+  else c.innerHTML=`<div class="code-box"><div class="code-head"><span class="code-title">.env</span><button class="copy-btn" onclick="navigator.clipboard.writeText(genEnv())">copy</button></div><div class="code-body">${esc(genEnv())}</div></div>`;
+}
+
+function renderSummary(){
+  const caps=Object.entries(agent.caps).filter(([k,v])=>v).map(([k])=>k).join(', ')||'none';
+  const rows=[['name',agent.name||'—'],['chain',agent.chain],['capabilities',caps],['max tx',agent.maxTxEth+' ETH'],['max gas',agent.maxGas+' gwei'],['interval',agent.interval+'s']];
+  return`<div class="summary-box">${rows.map(([k,v])=>`<div class="sum-row"><span>${k}</span><span>${v}</span></div>`).join('')}</div>`;
+}
+
+// ── GENERATORS ────────────────────────────────────────────────────
+function genEnv(){
+  return`# ${agent.name||'My Agent'} — Config
+# Generated by EIP.AI Agent Builder · eipagent.org
+
+AGENT_PRIVATE_KEY=0x_your_agent_wallet_key
+${agent.caps.deep?'ANTHROPIC_API_KEY=sk-ant-...\n':''}BASE_RPC=${RPC[agent.chain]}
+CHAIN=${agent.chain}
+MAX_TX_ETH=${agent.maxTxEth}
+MAX_GAS=${agent.maxGas}
+FAST_INTERVAL_MS=${parseInt(agent.interval)*1000}
+DEEP_INTERVAL_MS=${parseInt(agent.deepInterval)*60000}
+TREASURY=${agent.treasury}
+PORT=3001${agent.caps.tweet?'\n\nX_API_KEY=\nX_API_SECRET=\nX_ACCESS_TOKEN=\nX_ACCESS_TOKEN_SECRET=':''}`;
+}
+
+function genCode(){
+  const hasExec=agent.caps.execute, hasDeep=agent.caps.deep, hasTweet=agent.caps.tweet;
+  return`// ${agent.name||'My Agent'}
+// ${agent.role||'autonomous agent'}
+// Generated by EIP.AI Agent Builder — eipagent.org
+// Chain: ${agent.chain} | Capabilities: ${Object.entries(agent.caps).filter(([k,v])=>v).map(([k])=>k).join(', ')}
+
+require('dotenv').config();
+const { ethers } = require('ethers');${hasDeep?"\nconst Anthropic = require('@anthropic-ai/sdk');":''}
+const fs = require('fs');
+
+const AGENT_NAME   = '${agent.name||'Agent'}';
+const CHAIN        = '${agent.chain}';
+const BASE_RPC     = process.env.BASE_RPC || '${RPC[agent.chain]}';
+const PRIVATE_KEY  = process.env.AGENT_PRIVATE_KEY;
+const MAX_TX_ETH   = parseFloat(process.env.MAX_TX_ETH || '${agent.maxTxEth}');
+const MAX_GAS_GWEI = parseFloat(process.env.MAX_GAS    || '${agent.maxGas}');
+const FAST_MS      = parseInt(process.env.FAST_INTERVAL_MS || '${parseInt(agent.interval)*1000}');${hasDeep?`\nconst DEEP_MS      = parseInt(process.env.DEEP_INTERVAL_MS || '${parseInt(agent.deepInterval)*60000}');`:''}
+const TREASURY     = '${agent.treasury}';
+
+const provider = new ethers.JsonRpcProvider(BASE_RPC);
+const wallet   = PRIVATE_KEY ? new ethers.Wallet(PRIVATE_KEY, provider) : null;${hasDeep?"\nconst ai       = process.env.ANTHROPIC_API_KEY ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null;":''}
+
+let state = { cycles:0, actions:0, memory:[] };
+
+async function observe() {
+  const [blockNum, feeData] = await Promise.all([provider.getBlockNumber(), provider.getFeeData()]);
+  const gasGwei = parseFloat(ethers.formatUnits(feeData.gasPrice, 'gwei'));
+  const balance = wallet ? parseFloat(ethers.formatEther(await provider.getBalance(wallet.address))) : 0;
+  return { blockNum, gasGwei, balance };
+}
+
+// Strategy: ${agent.strategy||'monitor chain conditions'}
+function fastReason(obs) {${hasExec?`
+  if (obs.balance < 0.002) return { action:'ALERT', detail:'balance low', confidence:95 };
+  if (obs.gasGwei > MAX_GAS_GWEI) return { action:'HOLD', detail:\`gas \${obs.gasGwei} too high\`, confidence:90 };
+  if (obs.gasGwei < 0.003) return { action:'EXECUTE', detail:\`optimal gas \${obs.gasGwei}\`, confidence:82 };`:`
+  if (obs.gasGwei < 0.003) return { action:'SIGNAL', detail:\`optimal: gas \${obs.gasGwei}\`, confidence:80 };
+  if (obs.gasGwei > MAX_GAS_GWEI) return { action:'ALERT', detail:\`gas high: \${obs.gasGwei}\`, confidence:85 };`}
+  return { action:'MONITOR', detail:\`watching — gas \${obs.gasGwei}\`, confidence:65 };
+}
+${hasDeep?`
+async function deepReason(obs) {
+  if (!ai) return null;
+  try {
+    const res = await ai.messages.create({
+      model:'claude-sonnet-4-20250514', max_tokens:250,
+      messages:[{role:'user',content:\`You are \${AGENT_NAME} on \${CHAIN}.
+Role: ${agent.role}
+Strategy: ${agent.strategy}
+State: block=\${obs.blockNum} gas=\${obs.gasGwei} balance=\${obs.balance}
+Safety: max \${MAX_TX_ETH} ETH, max \${MAX_GAS_GWEI} gwei
+JSON only: {"action":"...","detail":"...","confidence":75}\`}]
+    });
+    return JSON.parse(res.content[0].text.replace(/\`\`\`json|\`\`\`/g,'').trim());
+  } catch { return null; }
+}
+`:''}${hasExec?`
+async function execute(txData) {
+  if (!wallet || !txData) return null;
+  const v = parseFloat(txData.value||'0');
+  if (v > MAX_TX_ETH) { console.log('[tx] blocked: exceeds limit'); return null; }
+  const fee = await provider.getFeeData();
+  if (parseFloat(ethers.formatUnits(fee.gasPrice,'gwei')) > MAX_GAS_GWEI) return null;
+  const tx = await wallet.sendTransaction({ to: txData.to, value: ethers.parseEther(String(v)) });
+  console.log(\`[tx] \${tx.hash}\`);
+  return await tx.wait();
+}
+`:''}${hasTweet?`
+async function tweet(text) {
+  // X API posting — fill credentials in .env
+  if (!process.env.X_API_KEY) return;
+  console.log('[tweet]', text);
+  // OAuth 1.0a posting logic here
+}
+`:''}
+async function cycle() {
+  const obs = await observe();
+  state.memory = [obs, ...state.memory].slice(0, 20);
+  const fast = fastReason(obs);${hasDeep?`
+  const deep = Date.now() - (state.lastDeep||0) > DEEP_MS ? await deepReason(obs) : null;
+  if (deep) state.lastDeep = Date.now();
+  const decision = deep || fast;`:`
+  const decision = fast;`}
+  console.log(\`[\${AGENT_NAME}] \${decision.action} (\${decision.confidence}%) — \${decision.detail}\`);${hasExec?`
+  if (decision.action === 'EXECUTE' && decision.txData) { await execute(decision.txData); state.actions++; }`:''}${hasTweet?`
+  if (decision.action === 'ALERT' || decision.action === 'SIGNAL') await tweet(\`\${decision.action}: \${decision.detail}\`);`:''}
+  state.cycles++;
+  fs.mkdirSync('data',{recursive:true});
+  fs.writeFileSync('data/current.json', JSON.stringify({decision,obs,state},null,2));
+}
+
+async function start() {
+  console.log(\`\${AGENT_NAME} starting on \${CHAIN}...\`);
+  console.log(\`wallet: \${wallet?.address||'monitor-only mode'}\`);
+  await cycle();
+  setInterval(cycle, FAST_MS);
+}
+
+start().catch(e=>{console.error('fatal:',e);process.exit(1);});
+`;
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── DOWNLOAD ──────────────────────────────────────────────────────
+function dl(content,name){const b=new Blob([content],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+function downloadEnv(){dl(genEnv(),'.env');}
+function downloadCode(){dl(genCode(),'agent.js');}
+function downloadAll(){
+  const n=(agent.name||'my-agent').toLowerCase().replace(/\s+/g,'-');
+  const deps=`"ethers":"^6.7.0","dotenv":"^16.0.0"${agent.caps.deep?',"@anthropic-ai/sdk":"^0.24.0"':''}`;
+  const pkg=`{\n  "name": "${n}",\n  "version": "1.0.0",\n  "description": "${agent.role}",\n  "main": "agent.js",\n  "scripts": { "start": "node agent.js" },\n  "dependencies": { ${deps} }\n}`;
+  const readme=`# ${agent.name||'My Agent'}\n\n${agent.role}\n\nGenerated by EIP.AI Agent Builder — eipagent.org\n\n## Setup\n\n1. \`npm install\`\n2. Copy \`.env\` and fill in your keys\n3. \`npm start\`\n\n## Chain\n${agent.chain}\n\n## Capabilities\n${Object.entries(agent.caps).filter(([k,v])=>v).map(([k])=>'- '+k).join('\\n')}\n`;
+  setTimeout(()=>dl(genCode(),'agent.js'),0);
+  setTimeout(()=>dl(genEnv(),'.env'),150);
+  setTimeout(()=>dl(pkg,'package.json'),300);
+  setTimeout(()=>dl(readme,'README.md'),450);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+renderTemplates();
+render();
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

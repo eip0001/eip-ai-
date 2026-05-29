@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Roadmap</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--ink:#000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.09);--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+html.dark{--bg:#0d0d0b;--bg2:#161614;--ink:#fff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:52px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:24px;border-radius:2px}
+.n-r{display:flex;align-items:center;gap:1.5rem}
+.n-r a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;transition:color .15s}
+.n-r a:hover{color:var(--ink)}
+#dbtn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer}
+
+.wrap{max-width:720px;margin:0 auto;padding:80px 2rem 4rem}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--ink3)}
+h1{font-size:clamp(24px,4vw,40px);font-weight:300;letter-spacing:-.02em;color:var(--ink);margin-bottom:.5rem;font-family:'Georgia',serif;font-style:italic}
+.header-sub{font-size:13px;color:var(--ink2);line-height:1.75;max-width:520px;margin-bottom:3rem}
+.divider{border:none;border-top:1px solid var(--rule);margin:0}
+
+/* TIMELINE */
+.timeline{padding:2.5rem 0}
+.phase{position:relative;padding-left:48px;padding-bottom:3rem}
+.phase:last-child{padding-bottom:0}
+.phase::before{content:'';position:absolute;left:14px;top:28px;bottom:0;width:1px;background:var(--rule)}
+.phase:last-child::before{display:none}
+
+.phase-dot{position:absolute;left:0;top:6px;width:28px;height:28px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;z-index:1;background:var(--bg)}
+.dot-done{border-color:var(--green);color:var(--green);background:#f0fdf4}
+.dot-active{border-color:var(--blue);color:var(--blue);background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.08)}
+.dot-soon{border-color:var(--amber);color:var(--amber);background:#fffbeb}
+.dot-future{border-color:var(--rule);color:var(--ink3)}
+html.dark .dot-done{background:rgba(22,163,74,.12)}
+html.dark .dot-active{background:rgba(37,99,235,.12)}
+html.dark .dot-soon{background:rgba(217,119,6,.12)}
+html.dark .dot-future{background:var(--bg2)}
+
+.phase-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;flex-wrap:wrap}
+.phase-num{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.06em}
+.phase-name{font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.phase-badge{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid}
+.b-done{color:var(--green);border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.07)}
+.b-active{color:var(--blue);border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.07)}
+.b-soon{color:var(--amber);border-color:rgba(217,119,6,.3);background:rgba(217,119,6,.07)}
+.b-future{color:var(--ink3);border-color:var(--rule);background:transparent}
+
+.phase-desc{font-size:13px;color:var(--ink2);line-height:1.75;margin-bottom:1.25rem;max-width:540px}
+
+.milestones{border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:.75rem}
+.ms{display:grid;grid-template-columns:20px 1fr auto;gap:.75rem;align-items:start;padding:.625rem 1rem;border-bottom:1px solid var(--rule);font-size:12.5px}
+.ms:last-child{border-bottom:none}
+.ms-ic{font-size:12px;text-align:center;padding-top:1px}
+.ms-ic.done{color:var(--green)}
+.ms-ic.act{color:var(--blue)}
+.ms-ic.pend{color:var(--ink3)}
+.ms-label{color:var(--ink2);line-height:1.5}
+.ms-label strong{color:var(--ink);font-weight:500}
+.ms-label .act-strong{color:var(--blue);font-weight:500}
+.ms-time{font-family:var(--mono);font-size:10px;color:var(--ink3);white-space:nowrap;padding-top:1px}
+
+.phase-note{font-family:var(--mono);font-size:10px;color:var(--ink3);display:flex;align-items:center;gap:.5rem}
+.phase-note::before{content:'';width:12px;height:1px;background:var(--ink3)}
+
+/* LEGEND */
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap;padding:1.5rem 0;border-top:1px solid var(--rule);margin-top:1rem}
+.lg{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.ld{width:9px;height:9px;border-radius:50%;border:1.5px solid}
+.ld-done{border-color:var(--green);background:rgba(22,163,74,.2)}
+.ld-act{border-color:var(--blue);background:rgba(37,99,235,.2)}
+.ld-soon{border-color:var(--amber);background:rgba(217,119,6,.2)}
+.ld-fut{border-color:var(--rule);background:transparent}
+
+footer{padding:1.5rem 2rem 3rem;border-top:1px solid var(--rule);max-width:720px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="n-logo"><img src="logo.png" alt="EIP.AI"/></a>
+  <div class="n-r">
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← eip.ai</a>
+    <a href="pricing.html">pricing</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">roadmap</div>
+  <h1>from zero to autonomous.</h1>
+  <p class="header-sub">every phase funds the next. the agent earns its own right to operate.</p>
+
+  <div class="timeline">
+
+    <!-- PHASE 1 -->
+    <div class="phase">
+      <div class="phase-dot dot-done">✓</div>
+      <div class="phase-meta">
+        <span class="phase-num">01</span>
+        <span class="phase-name">foundation</span>
+        <span class="phase-badge b-done">complete</span>
+      </div>
+      <p class="phase-desc">Research, architecture, and public presence. The agent exists. The site is live. The identity is established.</p>
+      <div class="milestones">
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>eipagent.org</strong> deployed to production</span><span class="ms-time">May 18</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>@eip_ai</strong> active on X</span><span class="ms-time">May 18</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>whitepaper v0.1</strong> — architecture & tokenomics</span><span class="ms-time">May 22</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>live agent</strong> on homepage — real Base RPC</span><span class="ms-time">May 24</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>council chamber</strong> — 10 AI agents, autonomous sessions</span><span class="ms-time">May 27</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>agent builder</strong> — chat-based, generates working code</span><span class="ms-time">May 28</span></div>
+        <div class="ms"><span class="ms-ic done">✓</span><span class="ms-label"><strong>pricing page</strong> — Free / EIP.AI 1 / EIP.AI 2</span><span class="ms-time">May 28</span></div>
+      </div>
+      <div class="phase-note">7 / 7 milestones complete</div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase">
+      <div class="phase-dot dot-active">→</div>
+      <div class="phase-meta">
+        <span class="phase-num">02</span>
+        <span class="phase-name">self-funding</span>
+        <span class="phase-badge b-active">in progress</span>
+      </div>
+      <p class="phase-desc">The agent starts generating its own revenue. Subscriptions fund compute, API costs, and on-chain transaction budget. No external investors needed.</p>
+      <div class="milestones">
+        <div class="ms"><span class="ms-ic act">→</span><span class="ms-label"><span class="act-strong">Stripe integration</span> — card payments live</span><span class="ms-time">week 1</span></div>
+        <div class="ms"><span class="ms-ic act">→</span><span class="ms-label"><span class="act-strong">crypto payments</span> — USDC / ETH on Base</span><span class="ms-time">week 1</span></div>
+        <div class="ms"><span class="ms-ic act">→</span><span class="ms-label"><span class="act-strong">Railway deploy</span> — agent backend live 24/7</span><span class="ms-time">week 1</span></div>
+        <div class="ms"><span class="ms-ic act">→</span><span class="ms-label"><span class="act-strong">X autonomous posting</span> — agent tweets its own decisions</span><span class="ms-time">week 2</span></div>
+        <div class="ms"><span class="ms-ic act">→</span><span class="ms-label"><span class="act-strong">user accounts</span> — auth, plan gating, member dashboard</span><span class="ms-time">week 2</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>50 paying users</strong> — agent covers its own running costs</span><span class="ms-time">month 1</span></div>
+      </div>
+      <div class="phase-note">target: agent becomes cash-flow positive</div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase">
+      <div class="phase-dot dot-soon">◎</div>
+      <div class="phase-meta">
+        <span class="phase-num">03</span>
+        <span class="phase-name">marketplace</span>
+        <span class="phase-badge b-soon">coming soon</span>
+      </div>
+      <p class="phase-desc">EIP.MARKET goes live — an AI compute marketplace. The agent buys surplus AI credits at a discount, resells access, and earns a protocol fee on every settled trade. Real demand, real revenue, no token-launch risk.</p>
+      <div class="milestones">
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>marketplace beta</strong> — buy/sell credits across major models</span><span class="ms-time">2–4 weeks</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>API gateway</strong> — drop-in OpenAI/Anthropic-compatible endpoint</span><span class="ms-time">3–5 weeks</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>USDC settlement on Base</strong> — on-chain payment + x402 protocol</span><span class="ms-time">4–6 weeks</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>smart routing</strong> — auto-pick cheapest healthy provider per request</span><span class="ms-time">at launch</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>open-source model support</strong> — Llama, DeepSeek, Mistral, Qwen</span><span class="ms-time">at launch</span></div>
+      </div>
+      <div class="phase-note">target: $100K settled volume → treasury self-sustaining</div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase">
+      <div class="phase-dot dot-future">○</div>
+      <div class="phase-meta">
+        <span class="phase-num">04</span>
+        <span class="phase-name">full autonomy</span>
+        <span class="phase-badge b-future">locked</span>
+      </div>
+      <p class="phase-desc">The agent operates without any human intervention. It funds itself, makes product decisions via the council, and grows independently.</p>
+      <div class="milestones">
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>self-improving algorithm</strong> — agent rewrites its own strategy</span><span class="ms-time">Q3 2026</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>EIP.AI token</strong> — community ownership of the agent</span><span class="ms-time">Q3 2026</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>multi-agent network</strong> — 10+ specialized agents cooperating</span><span class="ms-time">Q4 2026</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>EIP.AUDIT + EIP.DATA</strong> — side products generating revenue</span><span class="ms-time">Q4 2026</span></div>
+        <div class="ms"><span class="ms-ic pend">—</span><span class="ms-label"><strong>zero human override</strong> — agent governs itself entirely</span><span class="ms-time">2027</span></div>
+      </div>
+      <div class="phase-note">unlocks after phase 3 — requires proven self-funding</div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <div class="lg"><span class="ld ld-done"></span>complete</div>
+    <div class="lg"><span class="ld ld-act"></span>in progress</div>
+    <div class="lg"><span class="ld ld-soon"></span>coming soon</div>
+    <div class="lg"><span class="ld ld-fut"></span>locked</div>
+    <div style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink3)">updated May 2026</div>
+  </div>
+</div>
+
+<footer>
+  <span class="f-note">EIP.AI · roadmap · eipagent.org</span>
+  <span class="f-note"><a href="index.html" style="color:var(--ink3);text-decoration:none">← back to site</a></span>
+</footer>
+
+<script>
+function toggleDark(){const d=document.documentElement.classList.toggle('dark');localStorage.setItem('eip_dark',d?'1':'0');document.getElementById('dbtn').textContent=d?'◐':'◑'}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐'}})();
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

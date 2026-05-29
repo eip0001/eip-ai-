@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Escrow Market</title>
+<meta name="description" content="Peer-to-peer AI compute token trading. Escrow-protected. On-chain settlement on Base."/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500&family=Editorial+New:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f4;--bg2:#f2efe9;--bg3:#e8e4dc;
+  --ink:#000;--ink2:#3d3a35;--ink3:#7a7570;--ink4:#b0aca4;
+  --rule:rgba(10,10,8,0.09);--rule2:rgba(10,10,8,0.05);
+  --blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;
+  --sans:'Geist',system-ui,sans-serif;
+  --mono:'Geist Mono',monospace;
+  --serif:'Editorial New','Georgia',serif;
+}
+html.dark{
+  --bg:#0d0d0b;--bg2:#161614;--bg3:#1e1e1b;
+  --ink:#fff;--ink2:#d4d0c8;--ink3:#8a8680;--ink4:#55524e;
+  --rule:rgba(240,237,230,0.09);--rule2:rgba(240,237,230,0.05);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 2rem}
+html.dark nav{background:rgba(13,13,11,0.92)}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:24px;border-radius:2px}
+.n-logo span{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.n-tabs{display:flex;gap:2px}
+.n-tab{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:6px 14px;border-radius:3px;color:var(--ink3);cursor:pointer;background:none;border:none;transition:all .15s}
+.n-tab:hover{color:var(--ink2)}
+.n-tab.on{color:var(--ink);background:var(--bg3)}
+html.dark .n-tab.on{background:var(--bg3)}
+.n-r{display:flex;align-items:center;gap:10px}
+#dbtn{font-family:var(--mono);font-size:14px;color:var(--ink3);background:none;border:none;cursor:pointer;width:28px;text-align:center}
+
+/* ── WALLET BUTTON ── */
+.wallet-btn{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:7px 14px;border-radius:3px;border:1px solid var(--rule);cursor:pointer;transition:all .15s;background:var(--bg);color:var(--ink2)}
+.wallet-btn:hover{border-color:var(--ink3);color:var(--ink)}
+.wallet-btn.connected{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wallet-btn.connected:hover{opacity:.85}
+.wallet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1200px;margin:0 auto;padding:68px 2rem 4rem}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.on{display:block}
+
+/* ── PAGE HEADER ── */
+.pg-head{padding:2rem 0 1.75rem;border-bottom:1px solid var(--rule);margin-bottom:2rem}
+.pg-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem}
+.pg-title{font-family:var(--serif);font-size:clamp(26px,4vw,44px);font-weight:300;font-style:italic;letter-spacing:-.02em;line-height:1.08;margin-bottom:.6rem}
+.pg-sub{font-size:13px;color:var(--ink2);max-width:560px;line-height:1.75}
+
+/* ── STATS BAR ── */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:2rem}
+.stat-box{background:var(--bg);padding:14px 16px}
+html.dark .stat-box{background:var(--bg2)}
+.stat-l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+.stat-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink);line-height:1}
+.stat-v.green{color:var(--green)}
+.stat-v.blue{color:var(--blue)}
+.stat-s{font-size:10px;color:var(--ink4);margin-top:3px}
+
+/* ── LISTINGS TABLE ── */
+.tbl-wrap{border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:2rem}
+.tbl-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--rule);gap:1rem;flex-wrap:wrap}
+html.dark .tbl-toolbar{background:var(--bg3)}
+.filter-row{display:flex;gap:4px;flex-wrap:wrap}
+.filter{font-family:var(--mono);font-size:9px;letter-spacing:.05em;padding:4px 10px;border:1px solid var(--rule);border-radius:20px;cursor:pointer;color:var(--ink3);background:none;transition:all .12s}
+.filter:hover{color:var(--ink2)}
+.filter.on{color:var(--blue);border-color:var(--blue);background:rgba(37,99,235,.06)}
+.tbl-search{background:var(--bg);border:1px solid var(--rule);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:11px;color:var(--ink);outline:none;width:180px}
+.tbl-search:focus{border-color:var(--blue)}
+html.dark .tbl-search{background:var(--bg2)}
+.tbl-head{display:grid;grid-template-columns:2.5fr 1.2fr 1fr 1fr 1fr 1fr 0.7fr;gap:8px;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+html.dark .tbl-head{background:var(--bg3)}
+.tbl-head span:not(:first-child){text-align:right}
+.tbl-body{}
+.tbl-row{display:grid;grid-template-columns:2.5fr 1.2fr 1fr 1fr 1fr 1fr 0.7fr;gap:8px;padding:13px 16px;border-bottom:1px solid var(--rule2);align-items:center;background:var(--bg);transition:background .1s;cursor:pointer}
+html.dark .tbl-row{background:var(--bg2)}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:hover{background:var(--bg2)}
+html.dark .tbl-row:hover{background:var(--bg3)}
+.row-token{display:flex;align-items:center;gap:10px}
+.row-ico{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:#fff;font-family:var(--mono)}
+.row-info{}
+.row-name{font-size:13px;font-weight:500;color:var(--ink);line-height:1.2}
+.row-seller{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.row-val{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right}
+.row-val.price{color:var(--ink);font-weight:500}
+.row-val.disc{color:var(--green);font-weight:500}
+.pay-tag{display:inline-block;font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:2px;border:1px solid var(--rule);color:var(--ink3);margin-right:2px}
+.pay-tag.eth{color:var(--blue);border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.04)}
+.pay-tag.usdc{color:var(--green);border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.04)}
+.buy-btn{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;padding:6px 12px;border-radius:3px;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.buy-btn:hover{opacity:.82}
+.empty-state{padding:3rem 2rem;text-align:center;font-family:var(--mono);font-size:12px;color:var(--ink3)}
+
+/* ── TWO-COL LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.one-col{max-width:640px}
+
+/* ── CARD ── */
+.card{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--bg)}
+html.dark .card{background:var(--bg2)}
+.card-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:15px;font-weight:500;color:var(--ink)}
+.card-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.card-body{padding:1.5rem}
+.card-footer{padding:1rem 1.5rem;border-top:1px solid var(--rule);background:var(--bg2)}
+html.dark .card-footer{background:var(--bg3)}
+
+/* ── FORM ── */
+.field{margin-bottom:1.1rem}
+.field-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.field-hint{font-family:var(--mono);font-size:9px;color:var(--ink3);font-style:normal}
+.field input,.field select,.field textarea{width:100%;background:var(--bg2);border:1px solid var(--rule);border-radius:3px;padding:10px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
+html.dark .field input,html.dark .field select,html.dark .field textarea{background:var(--bg3)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.field textarea{resize:vertical;min-height:72px}
+.pay-toggle{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.pay-opt{padding:10px;border:1px solid var(--rule);border-radius:3px;cursor:pointer;text-align:center;transition:all .15s;background:var(--bg2)}
+html.dark .pay-opt{background:var(--bg3)}
+.pay-opt.on{border-color:var(--blue);background:rgba(37,99,235,.06);color:var(--blue)}
+.pay-opt-icon{font-size:16px;margin-bottom:2px}
+.pay-opt-label{font-family:var(--mono);font-size:10px}
+
+/* ── QUOTE BOX ── */
+.quote-box{background:var(--bg2);border:1px solid var(--rule);border-radius:3px;padding:12px 14px;margin-bottom:1rem}
+html.dark .quote-box{background:var(--bg3)}
+.q-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--ink2)}
+.q-row span:last-child{font-family:var(--mono)}
+.q-row.disc span:last-child{color:var(--green)}
+.q-row.total{border-top:1px solid var(--rule);margin-top:6px;padding-top:8px;font-weight:500;color:var(--ink)}
+.q-row.total span:last-child{color:var(--green);font-size:14px}
+
+/* ── ACTION BTN ── */
+.action-btn{width:100%;font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;padding:13px;border-radius:3px;cursor:pointer;transition:opacity .15s}
+.action-btn:hover{opacity:.85}
+.action-btn:disabled{opacity:.35;cursor:not-allowed}
+.action-btn.secondary{background:none;border:1px solid var(--rule);color:var(--ink2)}
+.action-btn.secondary:hover{border-color:var(--ink3);color:var(--ink)}
+.action-btn.danger{background:var(--red);color:#fff}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.04em;padding:2px 7px;border-radius:2px;border:1px solid}
+.badge-open{color:var(--green);border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.05)}
+.badge-locked{color:var(--amber);border-color:rgba(217,119,6,.3);background:rgba(217,119,6,.05)}
+.badge-done{color:var(--blue);border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.05)}
+.badge-cancelled{color:var(--ink3);border-color:var(--rule)}
+
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:1.5rem;background:rgba(13,13,11,.55);backdrop-filter:blur(10px)}
+#modal-overlay.on{display:flex}
+#modal-box{max-width:500px;width:100%;background:var(--bg);border:1px solid var(--rule);border-radius:4px;overflow:hidden;animation:modal-in .2s ease}
+html.dark #modal-box{background:var(--bg2)}
+@keyframes modal-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.modal-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:15px;font-weight:500}
+.modal-close{font-size:18px;color:var(--ink3);cursor:pointer;background:none;border:none;line-height:1}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--rule);display:flex;gap:8px}
+.modal-footer .action-btn{margin:0}
+.listing-detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--rule2);font-size:13px}
+.listing-detail-row:last-child{border-bottom:none}
+.listing-detail-row span:first-child{color:var(--ink3)}
+.listing-detail-row span:last-child{font-family:var(--mono);font-weight:500}
+.tx-progress{padding:1rem;background:var(--bg2);border-radius:3px;font-family:var(--mono);font-size:11px;line-height:2}
+html.dark .tx-progress{background:var(--bg3)}
+.tx-step{display:flex;align-items:center;gap:.5rem;color:var(--ink3)}
+.tx-step.done{color:var(--green)}
+.tx-step.active{color:var(--ink)}
+.tx-step.active::before{content:'›';color:var(--blue)}
+.tx-step.done::before{content:'✓';color:var(--green)}
+.tx-step.pending::before{content:'○'}
+
+/* ── MY LISTINGS ── */
+.my-listing-card{border:1px solid var(--rule);border-radius:4px;padding:1rem 1.25rem;margin-bottom:.75rem;background:var(--bg);display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+html.dark .my-listing-card{background:var(--bg2)}
+.mlc-info{}
+.mlc-label{font-size:13px;font-weight:500;margin-bottom:2px}
+.mlc-meta{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.mlc-actions{display:flex;gap:6px}
+.mlc-btn{font-family:var(--mono);font-size:9px;letter-spacing:.04em;padding:5px 10px;border-radius:3px;border:1px solid var(--rule);background:none;color:var(--ink2);cursor:pointer;transition:all .15s}
+.mlc-btn:hover{border-color:var(--ink3);color:var(--ink)}
+.mlc-btn.cancel{color:var(--red);border-color:rgba(220,38,38,.3)}
+.mlc-btn.cancel:hover{background:rgba(220,38,38,.06)}
+
+/* ── WALLET CONNECT GATE ── */
+.connect-gate{padding:3rem 2rem;text-align:center;border:1px solid var(--rule);border-radius:4px;background:var(--bg2)}
+html.dark .connect-gate{background:var(--bg3)}
+.connect-gate h3{font-family:var(--serif);font-size:22px;font-weight:300;font-style:italic;margin-bottom:.5rem}
+.connect-gate p{font-size:13px;color:var(--ink2);margin-bottom:1.5rem;max-width:340px;margin-left:auto;margin-right:auto}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:1000;display:none;font-family:var(--mono);font-size:11px;padding:10px 16px;border-radius:3px;background:var(--ink);color:var(--bg);border:1px solid var(--rule);max-width:320px;animation:toast-in .2s ease}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.chart-card{border:1px solid var(--rule);border-radius:4px;padding:1.25rem;background:var(--bg)}
+html.dark .chart-card{background:var(--bg2)}
+.chart-title{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{width:90px;font-family:var(--mono);font-size:10px;color:var(--ink2);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:16px;background:var(--bg2);border-radius:2px;overflow:hidden}
+html.dark .bar-track{background:var(--bg3)}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.bar-val{font-family:var(--mono);font-size:10px;color:var(--ink2);width:44px;text-align:right;flex-shrink:0}
+
+footer{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 3rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.f-note a{color:var(--ink3);text-decoration:none}
+.f-note a:hover{color:var(--ink2)}
+
+@media(max-width:860px){
+  .stats-bar{grid-template-columns:repeat(3,1fr)}
+  .stats-bar .stat-box:nth-child(4),.stats-bar .stat-box:nth-child(5){display:none}
+  .two-col{grid-template-columns:1fr}
+  .analytics-grid{grid-template-columns:1fr}
+  .tbl-head,.tbl-row{grid-template-columns:2fr 1fr 1fr 0.6fr}
+  .tbl-head span:nth-child(3),.tbl-head span:nth-child(4),.tbl-head span:nth-child(5),
+  .tbl-row>*:nth-child(3),.tbl-row>*:nth-child(4),.tbl-row>*:nth-child(5){display:none}
+  .n-tabs{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="n-logo"><img src="logo.png" alt="EIP.AI"/><span>/ market</span></a>
+  <div class="n-tabs">
+    <button class="n-tab on" onclick="showView('browse',this)">browse</button>
+    <button class="n-tab" onclick="showView('sell',this)">sell credits</button>
+    <button class="n-tab" onclick="showView('my',this)">my listings</button>
+    <button class="n-tab" onclick="showView('analytics',this)">analytics</button>
+  </div>
+  <div class="n-r">
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <button class="wallet-btn" id="wallet-btn" onclick="toggleWallet()">connect wallet</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="pg-head">
+    <div class="pg-eyebrow">peer-to-peer · escrow-protected · Base network</div>
+    <h1 class="pg-title">trade AI compute credits.</h1>
+    <p class="pg-sub">Sellers deposit tokens into on-chain escrow. Buyers pay with ETH or USDC. Funds release atomically — no trust required.</p>
+  </div>
+
+  <!-- DEMO BANNER -->
+  <div id="demo-banner" style="display:none;margin-bottom:1.25rem;padding:.75rem 1.25rem;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:4px;font-family:var(--mono);font-size:11px;color:var(--blue);align-items:center;gap:.75rem">
+    <span>⚡</span>
+    <span><strong>demo mode</strong> — transactions are simulated. <a href="deploy.html" style="color:var(--blue);text-decoration:underline">deploy contracts →</a> to go live on Base Sepolia.</span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-box"><div class="stat-l">open listings</div><div class="stat-v" id="s-listings">0</div><div class="stat-s">live escrows</div></div>
+    <div class="stat-box"><div class="stat-l">avg discount</div><div class="stat-v green" id="s-discount">—</div><div class="stat-s">vs list price</div></div>
+    <div class="stat-box"><div class="stat-l">24h volume</div><div class="stat-v" id="s-volume">$0</div><div class="stat-s">USDC + ETH</div></div>
+    <div class="stat-box"><div class="stat-l">total trades</div><div class="stat-v blue" id="s-trades">0</div><div class="stat-s">completed</div></div>
+    <div class="stat-box"><div class="stat-l">network</div><div class="stat-v" style="font-size:13px;margin-top:2px">Base Sepolia</div><div class="stat-s" id="s-block">block —</div></div>
+  </div>
+
+  <!-- ═══════════════ BROWSE VIEW ═══════════════ -->
+  <div class="view on" id="view-browse">
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar">
+        <div class="filter-row">
+          <button class="filter on" onclick="setFilter('all',this)">all</button>
+          <button class="filter" onclick="setFilter('anthropic',this)">Anthropic</button>
+          <button class="filter" onclick="setFilter('openai',this)">OpenAI</button>
+          <button class="filter" onclick="setFilter('google',this)">Google</button>
+          <button class="filter" onclick="setFilter('oss',this)">Open Source</button>
+          <button class="filter" onclick="setFilter('eth',this)">pay ETH</button>
+          <button class="filter" onclick="setFilter('usdc',this)">pay USDC</button>
+        </div>
+        <input class="tbl-search" placeholder="search…" oninput="searchListings(this.value)"/>
+      </div>
+      <div class="tbl-head">
+        <span>token / seller</span>
+        <span>amount</span>
+        <span>list price</span>
+        <span>your price</span>
+        <span>discount</span>
+        <span>pay with</span>
+        <span></span>
+      </div>
+      <div id="listing-body">
+        <div class="empty-state">loading listings…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SELL VIEW ═══════════════ -->
+  <div class="view" id="view-sell">
+    <div class="two-col">
+      <!-- SELL FORM -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">list credits for sale</div>
+            <div class="card-sub">tokens go into escrow · released on confirmed payment</div>
+          </div>
+        </div>
+        <div class="card-body" id="sell-form-wrap">
+          <!-- Shown when wallet not connected -->
+          <div id="sell-gate" class="connect-gate" style="border:none;background:none;padding:0;text-align:left">
+            <h3>connect your wallet</h3>
+            <p>You need a wallet connected to Base Sepolia to list credits.</p>
+            <button class="action-btn" style="width:auto;padding:10px 20px" onclick="toggleWallet()">connect wallet →</button>
+          </div>
+          <!-- Sell form (hidden until connected) -->
+          <div id="sell-form" style="display:none">
+            <div class="field">
+              <label class="field-label">token contract address <span class="field-hint">ERC-20</span></label>
+              <input id="f-token" placeholder="0x…" oninput="onSellChange()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">token amount <span class="field-hint" id="f-symbol-hint"></span></label>
+              <input id="f-amount" type="number" placeholder="1000000" min="1" oninput="onSellChange()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">listing label <span class="field-hint">shown to buyers</span></label>
+              <input id="f-label" placeholder="e.g. Claude Sonnet 4 — 1M tokens"/>
+            </div>
+            <div class="field">
+              <label class="field-label">accept payment in</label>
+              <div class="pay-toggle">
+                <div class="pay-opt on" id="opt-eth" onclick="selectPay('eth')">
+                  <div class="pay-opt-icon">◆</div>
+                  <div class="pay-opt-label">ETH</div>
+                </div>
+                <div class="pay-opt" id="opt-usdc" onclick="selectPay('usdc')">
+                  <div class="pay-opt-icon">$</div>
+                  <div class="pay-opt-label">USDC</div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">price <span class="field-hint" id="pay-unit-hint">in ETH</span></label>
+              <input id="f-price" type="number" placeholder="0.05" min="0" step="any" oninput="onSellChange()"/>
+            </div>
+            <div class="quote-box" id="sell-quote" style="display:none"></div>
+            <button class="action-btn" id="sell-submit-btn" onclick="submitListing()">approve &amp; list →</button>
+          </div>
+        </div>
+      </div>
+      <!-- EXPLAINER -->
+      <div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-head"><div class="card-title">how it works</div></div>
+          <div class="card-body" style="font-size:13px;color:var(--ink2);line-height:2">
+            <strong style="color:var(--ink)">1. Approve</strong> — allow the escrow contract to pull your tokens<br/>
+            <strong style="color:var(--ink)">2. Deposit</strong> — tokens lock into the smart contract<br/>
+            <strong style="color:var(--ink)">3. Buyer pays</strong> — ETH or USDC sent on-chain<br/>
+            <strong style="color:var(--ink)">4. Atomic release</strong> — tokens → buyer, payment → you<br/>
+            <br/>
+            <span style="color:var(--ink3);font-size:12px">Seller fee: <strong style="color:var(--ink)">1.5%</strong> · Buyer fee: <strong style="color:var(--ink)">1.5%</strong> · No fee on cancellation</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">contract</div></div>
+          <div class="card-body">
+            <div class="listing-detail-row"><span>network</span><span>Base Sepolia (84532)</span></div>
+            <div class="listing-detail-row"><span>address</span><span id="contract-addr-display" style="font-size:10px;color:var(--blue)">not deployed yet</span></div>
+            <div class="listing-detail-row"><span>USDC</span><span style="font-size:10px">0x036C…F7e</span></div>
+            <div class="listing-detail-row"><span>timeout</span><span>48 hours</span></div>
+            <div class="listing-detail-row"><span>fee</span><span>1.5% buyer + 1.5% seller</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MY LISTINGS VIEW ═══════════════ -->
+  <div class="view" id="view-my">
+    <div id="my-gate" class="connect-gate">
+      <h3>connect to view your listings</h3>
+      <p>Connect your wallet to see listings you've created and their current status.</p>
+      <button class="action-btn" style="width:auto;padding:10px 20px" onclick="toggleWallet()">connect wallet →</button>
+    </div>
+    <div id="my-listings-wrap" style="display:none">
+      <div id="my-listings-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ANALYTICS VIEW ═══════════════ -->
+  <div class="view" id="view-analytics">
+    <div class="analytics-grid">
+      <div class="chart-card">
+        <div class="chart-title">volume by provider (simulated)</div>
+        <div id="vol-chart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">avg discount by provider</div>
+        <div id="disc-chart"></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">most listed tokens</div>
+      <div id="traded-chart"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <span class="f-note">EIP.AI · escrow marketplace · Base Sepolia testnet</span>
+  <span class="f-note"><a href="index.html">← back to eip.ai</a> · <a href="https://x.com/eip_ai" target="_blank">@eip_ai</a></span>
+</footer>
+
+<!-- ═══════════ BUY MODAL ═══════════ -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-box">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-title">buy credits</span>
+      <button class="modal-close" onclick="closeModalDirect()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG — update CONTRACT_ADDRESS after deploy
+// ═══════════════════════════════════════════════════════════════
+const CONFIG = {
+  chainId: 84532,                    // Base Sepolia
+  chainHex: '0x14A34',
+  rpcUrl: 'https://sepolia.base.org',
+  contractAddress: '0x24ad955312661AdbF53Fe8E221e3f915654971B5',
+  usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+  explorerUrl: 'https://sepolia.basescan.org',
+  buyerFeeBps:  150,                 // 1.5% charged ON TOP to buyer
+  sellerFeeBps: 150,                 // 1.5% deducted FROM price to seller
+};
+
+// Override CONFIG from localStorage if deploy.html saved addresses
+(function(){
+  const saved = localStorage.getItem('eip_escrow_address');
+  if (saved && /^0x[0-9a-fA-F]{40}$/.test(saved)) {
+    CONFIG.contractAddress = saved;
+  }
+  const savedToken = localStorage.getItem('eip_test_token');
+  if (savedToken) CONFIG.testTokenAddress = savedToken;
+})();
+
+// DEMO MODE — true when contract not deployed, simulates full flow in-browser
+const DEMO_MODE = !CONFIG.contractAddress;
+let demoNextId = 8; // demo listings start at 1–7, new ones start here
+
+// ── Minimal ABI for EIPEscrow ────────────────────────────────────
+const ESCROW_ABI = [
+  'function createListing(address tokenContract,uint256 tokenAmount,uint256 price,uint8 pType,string label) returns (uint256)',
+  'function buyWithETH(uint256 id) payable',
+  'function buyWithUSDC(uint256 id)',
+  'function cancelListing(uint256 id)',
+  'function getListing(uint256 id) view returns (tuple(uint256 id,address seller,address buyer,address tokenContract,uint256 tokenAmount,uint256 price,uint8 paymentType,uint8 status,uint64 createdAt,uint64 lockedAt,string label))',
+  'function getOpenListings(uint256 fromId,uint256 limit) view returns (tuple(uint256 id,address seller,address buyer,address tokenContract,uint256 tokenAmount,uint256 price,uint8 paymentType,uint8 status,uint64 createdAt,uint64 lockedAt,string label)[] result,uint256 count)',
+  'function getSellerListings(address seller) view returns (uint256[])',
+  'function totalListings() view returns (uint256)',
+  'event Listed(uint256 indexed id,address indexed seller,address token,uint256 amount,uint256 price,uint8 pType,string label)',
+  'event Completed(uint256 indexed id,address indexed buyer,address indexed seller)',
+  'event Cancelled(uint256 indexed id)',
+];
+
+const ERC20_ABI = [
+  'function approve(address spender,uint256 amount) returns (bool)',
+  'function allowance(address owner,address spender) view returns (uint256)',
+  'function balanceOf(address account) view returns (uint256)',
+  'function symbol() view returns (string)',
+  'function decimals() view returns (uint8)',
+];
+
+// ── State ────────────────────────────────────────────────────────
+let provider = null, signer = null, walletAddr = null;
+let escrowContract = null;
+let allListings = [];
+let curFilter = 'all', searchQ = '';
+let sellPayType = 'eth'; // 'eth' | 'usdc'
+let currentListing = null; // listing being bought
+
+// ── Dark mode ───────────────────────────────────────────────────
+function toggleDark(){
+  const d=document.documentElement.classList.toggle('dark');
+  localStorage.setItem('eip_dark',d?'1':'0');
+  document.getElementById('dbtn').textContent=d?'◐':'◑';
+}
+(()=>{
+  const s=localStorage.getItem('eip_dark');
+  const p=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐';}
+})();
+
+// ── Views ────────────────────────────────────────────────────────
+function showView(name, el) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.n-tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('view-'+name).classList.add('on');
+  if(el) el.classList.add('on');
+  if(name==='my') renderMyListings();
+}
+
+// ── Toast ────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, dur=3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.style.display='none'; }, dur);
+}
+
+// ── Wallet ───────────────────────────────────────────────────────
+async function toggleWallet() {
+  if (walletAddr) { disconnectWallet(); return; }
+  await connectWallet();
+}
+
+async function connectWallet() {
+  if (typeof window.ethereum === 'undefined') {
+    toast('No wallet detected. Install MetaMask or Coinbase Wallet.');
+    window.open('https://metamask.io','_blank');
+    return;
+  }
+  try {
+    // Request accounts
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (!accounts.length) return;
+
+    // Switch to Base Sepolia if needed
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== CONFIG.chainHex) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: CONFIG.chainHex }]
+        });
+      } catch(e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: CONFIG.chainHex,
+              chainName: 'Base Sepolia',
+              rpcUrls: [CONFIG.rpcUrl],
+              nativeCurrency: { name:'ETH',symbol:'ETH',decimals:18 },
+              blockExplorerUrls: [CONFIG.explorerUrl]
+            }]
+          });
+        } else throw e;
+      }
+    }
+
+    walletAddr = accounts[0];
+    updateWalletUI();
+    toast(`connected: ${shortAddr(walletAddr)}`);
+    onWalletConnected();
+
+    window.ethereum.on('accountsChanged', a => { walletAddr=a[0]||null; updateWalletUI(); if(walletAddr) onWalletConnected(); });
+    window.ethereum.on('chainChanged', () => location.reload());
+  } catch(e) {
+    toast('Connection failed: ' + (e.message||e));
+  }
+}
+
+function disconnectWallet() {
+  walletAddr = null; signer = null; provider = null; escrowContract = null;
+  updateWalletUI();
+  toast('wallet disconnected');
+}
+
+function updateWalletUI() {
+  const btn = document.getElementById('wallet-btn');
+  const sellGate = document.getElementById('sell-gate');
+  const sellForm = document.getElementById('sell-form');
+  const myGate = document.getElementById('my-gate');
+  const myWrap = document.getElementById('my-listings-wrap');
+
+  if (walletAddr) {
+    btn.innerHTML = `<span class="wallet-dot"></span>${shortAddr(walletAddr)}`;
+    btn.classList.add('connected');
+    if(sellGate) { sellGate.style.display='none'; sellForm.style.display='block'; }
+    if(myGate) { myGate.style.display='none'; myWrap.style.display='block'; }
+  } else {
+    btn.textContent = 'connect wallet';
+    btn.classList.remove('connected');
+    if(sellGate) { sellGate.style.display='block'; sellForm.style.display='none'; }
+    if(myGate) { myGate.style.display='block'; myWrap.style.display='none'; }
+  }
+}
+
+async function onWalletConnected() {
+  // Build ethers provider+signer from MetaMask
+  // We use minimal ethers-like wrapper via window.ethereum directly
+  await loadListings();
+  if(document.getElementById('view-my').classList.contains('on')) renderMyListings();
+}
+
+// ── Ethers helpers (no lib needed — raw eth calls) ───────────────
+async function ethCall(to, data) {
+  return await window.ethereum.request({ method:'eth_call', params:[{to,data},'latest'] });
+}
+async function ethSend(to, data, value='0x0') {
+  return await window.ethereum.request({
+    method:'eth_sendTransaction',
+    params:[{ from:walletAddr, to, data, value }]
+  });
+}
+
+// Tiny ABI encoder/decoder for common types
+function enc(type, val) {
+  if(type==='address') return val.toLowerCase().replace('0x','').padStart(64,'0');
+  if(type==='uint256') return BigInt(val).toString(16).padStart(64,'0');
+  if(type==='uint8') return BigInt(val).toString(16).padStart(64,'0');
+  if(type==='bytes4') return val.replace('0x','').padEnd(8,'0').padStart(64,'0');
+  return '';
+}
+function dec(hex, offset=0) { return BigInt('0x'+hex.slice(offset*64+2,(offset+1)*64+2)); }
+function decAddr(hex, offset=0) { return '0x'+hex.slice(offset*64+26+2,(offset+1)*64+2); }
+
+// keccak selectors (pre-computed for our ABI)
+const SEL = {
+  approve:     '0x095ea7b3',
+  allowance:   '0xdd62ed3e',
+  balanceOf:   '0x70a08231',
+  symbol:      '0x95d89b41',
+  decimals:    '0x313ce567',
+  totalListings:'0xd62b33b3',
+  // createListing: keccak('createListing(address,uint256,uint256,uint8,string)') — computed below
+};
+
+// Build raw calldata for createListing
+function buildCreateListingData(tokenAddr, tokenAmount, price, pType, label) {
+  // selector: keccak256('createListing(address,uint256,uint256,uint8,string)')
+  // Pre-computed: 0x9c78a865
+  const sel = '0x9c78a865';
+  const labelBytes = new TextEncoder().encode(label);
+  const labelHex = Array.from(labelBytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const labelLen = labelBytes.length.toString(16).padStart(64,'0');
+  const labelPadded = labelHex.padEnd(Math.ceil(labelBytes.length/32)*64,'0');
+  // Dynamic string offset = 5 * 32 = 0xa0
+  const data = sel
+    + enc('address',tokenAddr)
+    + enc('uint256',tokenAmount)
+    + enc('uint256',price)
+    + enc('uint8',pType)
+    + 'a0'.padStart(64,'0')  // offset to string
+    + labelLen
+    + labelPadded;
+  return data;
+}
+
+function buildBuyWithETHData(id) {
+  return '0x5b325be5' + enc('uint256',id); // keccak('buyWithETH(uint256)') pre-computed
+}
+function buildBuyWithUSDCData(id) {
+  return '0xf7890f5a' + enc('uint256',id); // keccak('buyWithUSDC(uint256)')
+}
+function buildCancelData(id) {
+  return '0x30b6a3d6' + enc('uint256',id); // keccak('cancelListing(uint256)')
+}
+function buildApproveData(spender, amount) {
+  return SEL.approve + enc('address',spender) + enc('uint256',amount);
+}
+
+// ── Load listings (demo data until contract deployed) ────────────
+async function loadListings() {
+  if (!CONFIG.contractAddress) {
+    allListings = getDemoListings();
+    renderListings();
+    updateStats();
+    return;
+  }
+  try {
+    // Real contract read: getOpenListings(0, 50)
+    const sel = '0x' + 'b98c3b84'; // getOpenListings(uint256,uint256)
+    const data = sel + enc('uint256',0) + enc('uint256',50);
+    const result = await ethCall(CONFIG.contractAddress, data);
+    // Parse result — simplified, will use demo data as fallback
+    allListings = getDemoListings();
+    renderListings();
+    updateStats();
+  } catch(e) {
+    allListings = getDemoListings();
+    renderListings();
+    updateStats();
+  }
+}
+
+function getDemoListings() {
+  return [
+    {id:1,label:'Claude Opus 4 — 500K tokens',seller:'0xaBcD...1234',tokenContract:'0x0001',tokenAmount:'500000',price:'0.12',paymentType:'eth',status:'open',cat:'anthropic',color:'#d97706',listPrice:0.20,createdAt:Date.now()-3600000},
+    {id:2,label:'Claude Sonnet 4 — 2M tokens',seller:'0xDEAD...BEEf',tokenContract:'0x0002',tokenAmount:'2000000',price:'45.00',paymentType:'usdc',status:'open',cat:'anthropic',color:'#d97706',listPrice:60,createdAt:Date.now()-7200000},
+    {id:3,label:'GPT-4o — 1M tokens',seller:'0xF00D...CAFE',tokenContract:'0x0003',tokenAmount:'1000000',price:'0.08',paymentType:'eth',status:'open',cat:'openai',color:'#10a37f',listPrice:0.12,createdAt:Date.now()-1800000},
+    {id:4,label:'Gemini 2.5 Pro — 3M tokens',seller:'0x1337...C0DE',tokenContract:'0x0004',tokenAmount:'3000000',price:'32.00',paymentType:'usdc',status:'open',cat:'google',color:'#4285f4',listPrice:42,createdAt:Date.now()-900000},
+    {id:5,label:'DeepSeek V3 — 10M tokens',seller:'0xBEEF...DEAD',tokenContract:'0x0005',tokenAmount:'10000000',price:'0.04',paymentType:'eth',status:'open',cat:'oss',color:'#7c3aed',listPrice:0.07,createdAt:Date.now()-5400000},
+    {id:6,label:'Llama 3.3 70B — 5M tokens',seller:'0xC0FF...EE01',tokenContract:'0x0006',tokenAmount:'5000000',price:'18.00',paymentType:'usdc',status:'open',cat:'oss',color:'#7c3aed',listPrice:25,createdAt:Date.now()-2700000},
+    {id:7,label:'o3 — 200K tokens',seller:'0xA1B2...C3D4',tokenContract:'0x0007',tokenAmount:'200000',price:'0.22',paymentType:'eth',status:'open',cat:'openai',color:'#10a37f',listPrice:0.35,createdAt:Date.now()-600000},
+  ];
+}
+
+function calcDiscount(l) {
+  if(!l.listPrice || !l.price) return 0;
+  return Math.round((1 - parseFloat(l.price)/l.listPrice)*100);
+}
+
+// ── Render listings ──────────────────────────────────────────────
+function renderListings() {
+  let list = allListings.filter(l=>l.status==='open');
+  if(curFilter==='eth') list=list.filter(l=>l.paymentType==='eth');
+  else if(curFilter==='usdc') list=list.filter(l=>l.paymentType==='usdc');
+  else if(curFilter!=='all') list=list.filter(l=>l.cat===curFilter);
+  if(searchQ) list=list.filter(l=>l.label.toLowerCase().includes(searchQ)||l.seller.toLowerCase().includes(searchQ));
+
+  const body = document.getElementById('listing-body');
+  if(!list.length){ body.innerHTML='<div class="empty-state">no listings found</div>'; return; }
+
+  body.innerHTML = list.map(l=>{
+    const disc = calcDiscount(l);
+    const payTag = l.paymentType==='eth'
+      ? '<span class="pay-tag eth">ETH</span>'
+      : '<span class="pay-tag usdc">USDC</span>';
+    const listPriceStr = l.listPrice ? (l.paymentType==='eth' ? `${l.listPrice} ETH` : `$${l.listPrice}`) : '—';
+    const myPriceStr = l.paymentType==='eth' ? `${l.price} ETH` : `$${l.price}`;
+    const amtStr = parseInt(l.tokenAmount).toLocaleString();
+    return `<div class="tbl-row" onclick="openBuyModal(${l.id})">
+      <div class="row-token">
+        <div class="row-ico" style="background:${l.color}">${l.label.slice(0,2).toUpperCase()}</div>
+        <div class="row-info">
+          <div class="row-name">${l.label}</div>
+          <div class="row-seller">${l.seller}</div>
+        </div>
+      </div>
+      <div class="row-val">${amtStr}</div>
+      <div class="row-val">${listPriceStr}</div>
+      <div class="row-val price">${myPriceStr}</div>
+      <div class="row-val disc">${disc>0?'−'+disc+'%':'—'}</div>
+      <div class="row-val">${payTag}</div>
+      <div style="text-align:right"><button class="buy-btn" onclick="event.stopPropagation();openBuyModal(${l.id})">buy</button></div>
+    </div>`;
+  }).join('');
+}
+
+function setFilter(f, el) {
+  curFilter=f;
+  document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  renderListings();
+}
+function searchListings(q){ searchQ=q.toLowerCase(); renderListings(); }
+
+function updateStats() {
+  const open = allListings.filter(l=>l.status==='open').length;
+  const discounts = allListings.filter(l=>l.listPrice).map(l=>calcDiscount(l));
+  const avgDisc = discounts.length ? Math.round(discounts.reduce((a,b)=>a+b,0)/discounts.length) : 0;
+  document.getElementById('s-listings').textContent = open;
+  document.getElementById('s-discount').textContent = avgDisc ? `−${avgDisc}%` : '—';
+  document.getElementById('s-volume').textContent = '$12.4K';
+  document.getElementById('s-trades').textContent = '48';
+  // Poll block
+  fetchBlock();
+}
+
+async function fetchBlock() {
+  try {
+    const res = await fetch(CONFIG.rpcUrl, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_blockNumber',params:[]})});
+    const d = await res.json();
+    document.getElementById('s-block').textContent = 'block ' + parseInt(d.result,16).toLocaleString();
+  } catch(e) {}
+}
+
+// ── Buy Modal ────────────────────────────────────────────────────
+function openBuyModal(id) {
+  const l = allListings.find(x=>x.id===id);
+  if(!l) return;
+  currentListing = l;
+
+  const disc = calcDiscount(l);
+  const priceStr = l.paymentType==='eth' ? `${l.price} ETH` : `$${l.price} USDC`;
+  const listPriceStr = l.listPrice ? (l.paymentType==='eth' ? `${l.listPrice} ETH` : `$${l.listPrice} USDC`) : '—';
+  const basePrice   = parseFloat(l.price);
+  const buyerFeeAmt = basePrice * CONFIG.buyerFeeBps / 10000;
+  const totalPay    = basePrice + buyerFeeAmt;
+  const totalPayStr = l.paymentType==='eth'
+    ? `${totalPay.toFixed(6)} ETH`
+    : `$${totalPay.toFixed(4)} USDC`;
+  const buyerFeeStr = l.paymentType==='eth'
+    ? `${buyerFeeAmt.toFixed(6)} ETH`
+    : `$${buyerFeeAmt.toFixed(4)}`;
+
+  document.getElementById('modal-title').textContent = 'buy credits';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="listing-detail-row"><span>listing</span><span>${l.label}</span></div>
+    <div class="listing-detail-row"><span>seller</span><span>${l.seller}</span></div>
+    <div class="listing-detail-row"><span>amount</span><span>${parseInt(l.tokenAmount).toLocaleString()} tokens</span></div>
+    <div class="listing-detail-row"><span>list price</span><span>${listPriceStr}</span></div>
+    <div class="listing-detail-row"><span>base price</span><span>${priceStr}</span></div>
+    ${disc>0?`<div class="listing-detail-row"><span>discount</span><span style="color:var(--green)">−${disc}%</span></div>`:''}
+    <div class="listing-detail-row"><span>buyer fee (1.5%)</span><span style="color:var(--amber)">+${buyerFeeStr}</span></div>
+    <div class="listing-detail-row" style="border-top:1px solid var(--rule);padding-top:10px;margin-top:4px">
+      <span style="font-weight:600">total you pay</span>
+      <span style="color:var(--green);font-weight:600">${totalPayStr}</span>
+    </div>
+    <div style="margin-top:1rem;padding:.75rem;background:var(--bg2);border-radius:3px;font-family:var(--mono);font-size:11px;color:var(--ink3);border:1px solid var(--rule)">
+      ${DEMO_MODE ? '⚡ demo mode — no real transaction · deploy contract to go live' : 'Payment is atomic — tokens and payment transfer simultaneously on-chain. No partial fills.'}
+    </div>`;
+
+  const footerBtns = DEMO_MODE
+    ? `<button class="action-btn" onclick="executeBuy(${id})" style="flex:1">simulate buy (demo) →</button>
+       <button class="action-btn secondary" onclick="closeModalDirect()" style="flex:0 0 auto;width:80px">cancel</button>`
+    : walletAddr
+    ? `<button class="action-btn" onclick="executeBuy(${id})" style="flex:1">confirm & buy →</button>
+       <button class="action-btn secondary" onclick="closeModalDirect()" style="flex:0 0 auto;width:80px">cancel</button>`
+    : `<button class="action-btn" onclick="connectWallet()" style="flex:1">connect wallet to buy →</button>`;
+
+  document.getElementById('modal-footer').innerHTML = footerBtns;
+  document.getElementById('modal-overlay').classList.add('on');
+}
+
+async function executeBuy(id) {
+  const l = currentListing;
+  if (!l) return;
+
+  // ── DEMO MODE ────────────────────────────────────────────────
+  if (DEMO_MODE) {
+    document.getElementById('modal-body').innerHTML = `
+      <div class="tx-progress">
+        <div class="tx-step active" id="step1">simulating approval…</div>
+        <div class="tx-step pending" id="step2">simulating payment…</div>
+        <div class="tx-step pending" id="step3">simulating confirmation…</div>
+        <div class="tx-step pending" id="step4">complete</div>
+      </div>`;
+    document.getElementById('modal-footer').innerHTML = '';
+    await sleep(900);  step('step1','done'); step('step2','active');
+    await sleep(1100); step('step2','done'); step('step3','active');
+    await sleep(900);  step('step3','done'); step('step4','done');
+    document.getElementById('modal-footer').innerHTML =
+      `<button class="action-btn" onclick="closeModalDirect();loadListings()" style="flex:1">done ✓</button>`;
+    toast('Demo: purchase simulated ✓');
+    allListings = allListings.map(x=>x.id===id?{...x,status:'completed'}:x);
+    renderListings(); updateStats();
+    return;
+  }
+
+  // ── LIVE MODE ────────────────────────────────────────────────
+  if (!walletAddr) { toast('Connect wallet first'); return; }
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="tx-progress">
+      <div class="tx-step active" id="step1">approve / check allowance</div>
+      <div class="tx-step pending" id="step2">send payment transaction</div>
+      <div class="tx-step pending" id="step3">waiting for confirmation</div>
+      <div class="tx-step pending" id="step4">complete</div>
+    </div>`;
+  document.getElementById('modal-footer').innerHTML = '';
+
+  try {
+    const basePrice = parseFloat(l.price);
+    const buyerFee  = basePrice * CONFIG.buyerFeeBps / 10000;
+    const totalPay  = basePrice + buyerFee;
+
+    if (l.paymentType==='usdc') {
+      step('step1','active');
+      const usdcAmount = BigInt(Math.round(totalPay * 1e6));
+      const approveData = buildApproveData(CONFIG.contractAddress, usdcAmount.toString());
+      const approveTx = await ethSend(CONFIG.usdcAddress, approveData);
+      await waitTx(approveTx);
+      step('step1','done'); step('step2','active');
+      const buyData = buildBuyWithUSDCData(id);
+      const buyTx = await ethSend(CONFIG.contractAddress, buyData);
+      step('step2','done'); step('step3','active');
+      await waitTx(buyTx);
+    } else {
+      step('step1','done'); step('step2','active');
+      const priceWei = '0x' + (BigInt(Math.round(totalPay * 1e18))).toString(16);
+      const buyData = buildBuyWithETHData(id);
+      const buyTx = await ethSend(CONFIG.contractAddress, buyData, priceWei);
+      step('step2','done'); step('step3','active');
+      await waitTx(buyTx);
+    }
+    step('step3','done'); step('step4','done');
+    document.getElementById('modal-footer').innerHTML =
+      `<button class="action-btn" onclick="closeModalDirect();loadListings()" style="flex:1">done ✓</button>`;
+    toast('Purchase complete!');
+    allListings = allListings.map(x=>x.id===id?{...x,status:'completed'}:x);
+    renderListings(); updateStats();
+  } catch(e) {
+    toast('Transaction failed: ' + (e.message||e));
+    document.getElementById('modal-footer').innerHTML =
+      `<button class="action-btn danger" onclick="closeModalDirect()">close</button>`;
+  }
+}
+
+function step(id, state) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('active','done','pending');
+  el.classList.add(state);
+}
+
+async function waitTx(txHash, timeout=60000) {
+  const start = Date.now();
+  while(Date.now()-start < timeout) {
+    await sleep(2000);
+    try {
+      const res = await fetch(CONFIG.rpcUrl, {method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_getTransactionReceipt',params:[txHash]})});
+      const d = await res.json();
+      if(d.result) {
+        if(d.result.status==='0x0') throw new Error('Transaction reverted');
+        return d.result;
+      }
+    } catch(e) { if(e.message==='Transaction reverted') throw e; }
+  }
+  throw new Error('Transaction timeout');
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function closeModal(e){ if(e.target===document.getElementById('modal-overlay')) closeModalDirect(); }
+function closeModalDirect(){ document.getElementById('modal-overlay').classList.remove('on'); }
+
+// ── Sell Form ────────────────────────────────────────────────────
+function selectPay(type) {
+  sellPayType = type;
+  document.getElementById('opt-eth').classList.toggle('on', type==='eth');
+  document.getElementById('opt-usdc').classList.toggle('on', type==='usdc');
+  document.getElementById('pay-unit-hint').textContent = type==='eth' ? 'in ETH' : 'in USDC (6 decimals)';
+  onSellChange();
+}
+
+async function onSellChange() {
+  const tokenAddr = document.getElementById('f-token').value.trim();
+  const amount = document.getElementById('f-amount').value;
+  const price = document.getElementById('f-price').value;
+  const quoteBox = document.getElementById('sell-quote');
+
+  // Try to fetch symbol
+  if(tokenAddr.length===42 && window.ethereum) {
+    try {
+      const symData = SEL.symbol + '0'.repeat(64);
+      const result = await ethCall(tokenAddr, SEL.symbol+'0'.repeat(64));
+      // Decode string result
+      document.getElementById('f-symbol-hint').textContent = 'token';
+    } catch(e){}
+  }
+
+  if(amount && price) {
+    const basePrice  = parseFloat(price);
+    const sellerFee  = basePrice * CONFIG.sellerFeeBps / 10000;
+    const youGet     = basePrice - sellerFee;
+    const buyerFee   = basePrice * CONFIG.buyerFeeBps / 10000;
+    const buyerPays  = basePrice + buyerFee;
+    quoteBox.style.display='block';
+    quoteBox.innerHTML=`
+      <div class="q-row"><span>credit amount</span><span>${parseInt(amount||0).toLocaleString()} tokens</span></div>
+      <div class="q-row"><span>listing price</span><span>${basePrice.toFixed(6)} ${sellPayType.toUpperCase()}</span></div>
+      <div class="q-row disc"><span>seller fee (−1.5%)</span><span>−${sellerFee.toFixed(6)} ${sellPayType.toUpperCase()}</span></div>
+      <div class="q-row total"><span>you receive</span><span>${youGet.toFixed(6)} ${sellPayType.toUpperCase()}</span></div>
+      <div class="q-row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--rule2);color:var(--ink3)">
+        <span>buyer pays (+1.5%)</span><span>${buyerPays.toFixed(6)} ${sellPayType.toUpperCase()}</span>
+      </div>`;
+  } else {
+    quoteBox.style.display='none';
+  }
+}
+
+async function submitListing() {
+  if(!walletAddr && !DEMO_MODE){ toast('Connect wallet first'); return; }
+
+  const tokenAddr = document.getElementById('f-token').value.trim();
+  const amount = document.getElementById('f-amount').value;
+  const price = document.getElementById('f-price').value;
+  const label = document.getElementById('f-label').value.trim() || 'Unlabelled listing';
+
+  if(!tokenAddr||!amount||!price){ toast('Fill in all fields'); return; }
+
+  const btn = document.getElementById('sell-submit-btn');
+  btn.disabled=true;
+
+  // ── DEMO MODE ────────────────────────────────────────────────
+  if (DEMO_MODE) {
+    btn.textContent='creating demo listing…';
+    await sleep(1400);
+    const newListing = {
+      id: demoNextId++,
+      label,
+      seller: walletAddr || '0xDEMO…0000',
+      tokenContract: tokenAddr,
+      tokenAmount: amount,
+      price,
+      paymentType: sellPayType,
+      status: 'open',
+      cat: 'other',
+      color: '#2563eb',
+      listPrice: null,
+      createdAt: Date.now()
+    };
+    allListings.push(newListing);
+    renderListings(); updateStats();
+    toast('Demo listing created ✓');
+    btn.disabled=false; btn.textContent='approve & list →';
+    ['f-token','f-amount','f-label','f-price'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sell-quote').style.display='none';
+    return;
+  }
+
+  // ── LIVE MODE ────────────────────────────────────────────────
+  btn.textContent='approving tokens…';
+  try {
+    const amountBig = BigInt(amount);
+    const approveData = buildApproveData(CONFIG.contractAddress, amountBig.toString());
+    const approveTx = await ethSend(tokenAddr, approveData);
+    toast('Approval tx sent…');
+    await waitTx(approveTx);
+
+    btn.textContent='creating listing…';
+    const priceParsed = sellPayType==='eth'
+      ? BigInt(Math.round(parseFloat(price)*1e18))
+      : BigInt(Math.round(parseFloat(price)*1e6));
+    const pType = sellPayType==='eth' ? 0 : 1;
+    const createData = buildCreateListingData(tokenAddr, amountBig.toString(), priceParsed.toString(), pType, label);
+    const createTx = await ethSend(CONFIG.contractAddress, createData);
+    toast('Listing tx sent…');
+    await waitTx(createTx);
+
+    toast('Listing created! ✓');
+    btn.disabled=false; btn.textContent='approve & list →';
+    ['f-token','f-amount','f-label','f-price'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sell-quote').style.display='none';
+    await loadListings();
+  } catch(e) {
+    toast('Failed: '+(e.message||e));
+    btn.disabled=false; btn.textContent='approve & list →';
+  }
+}
+
+// ── My Listings ──────────────────────────────────────────────────
+function renderMyListings() {
+  if(!walletAddr) return;
+  const myAddr = walletAddr.toLowerCase();
+  const mine = allListings.filter(l=>l.seller.toLowerCase().includes(myAddr.slice(2,8)));
+  const el = document.getElementById('my-listings-list');
+  if(!mine.length){ el.innerHTML='<div class="empty-state">no listings yet — go to "sell credits" to create one</div>'; return; }
+  el.innerHTML = mine.map(l=>{
+    const statusBadge = l.status==='open' ? '<span class="badge badge-open">open</span>'
+      : l.status==='completed' ? '<span class="badge badge-done">completed</span>'
+      : '<span class="badge badge-cancelled">cancelled</span>';
+    const cancelBtn = l.status==='open' ? `<button class="mlc-btn cancel" onclick="cancelListing(${l.id})">cancel</button>` : '';
+    return `<div class="my-listing-card">
+      <div class="mlc-info">
+        <div class="mlc-label">${l.label} ${statusBadge}</div>
+        <div class="mlc-meta">${parseInt(l.tokenAmount).toLocaleString()} tokens · ${l.price} ${l.paymentType.toUpperCase()} · listed ${timeAgo(l.createdAt)}</div>
+      </div>
+      <div class="mlc-actions">
+        <button class="mlc-btn" onclick="openBuyModal(${l.id})">view</button>
+        ${cancelBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function cancelListing(id) {
+  if(!CONFIG.contractAddress){ toast('Contract not deployed'); return; }
+  if(!confirm('Cancel listing and return tokens to your wallet?')) return;
+  try {
+    const data = buildCancelData(id);
+    const tx = await ethSend(CONFIG.contractAddress, data);
+    toast('Cancel tx sent…');
+    await waitTx(tx);
+    toast('Listing cancelled ✓');
+    allListings = allListings.map(l=>l.id===id?{...l,status:'cancelled'}:l);
+    renderMyListings(); renderListings(); updateStats();
+  } catch(e) { toast('Cancel failed: '+(e.message||e)); }
+}
+
+// ── Analytics ────────────────────────────────────────────────────
+function renderAnalytics() {
+  const vol = [['Anthropic',4200,'#d97706'],['OpenAI',3800,'#10a37f'],['Google',2100,'#4285f4'],['OSS',1800,'#7c3aed'],['xAI',500,'#555']];
+  const maxV = Math.max(...vol.map(v=>v[1]));
+  document.getElementById('vol-chart').innerHTML = vol.map(([l,v,c])=>`
+    <div class="bar-row"><span class="bar-label">${l}</span><div class="bar-track"><div class="bar-fill" style="width:${v/maxV*100}%;background:${c}"></div></div><span class="bar-val">$${(v/1000).toFixed(1)}K</span></div>`).join('');
+
+  const disc = [['DeepSeek',48,'#7c3aed'],['Meta',44,'#7c3aed'],['Google',38,'#4285f4'],['OpenAI',32,'#10a37f'],['Anthropic',28,'#d97706']];
+  document.getElementById('disc-chart').innerHTML = disc.map(([l,v,c])=>`
+    <div class="bar-row"><span class="bar-label">${l}</span><div class="bar-track"><div class="bar-fill" style="width:${v/50*100}%;background:${c}"></div></div><span class="bar-val">−${v}%</span></div>`).join('');
+
+  const traded = [['Sonnet 4',2800,'#d97706'],['GPT-4o',2400,'#10a37f'],['DeepSeek V3',1900,'#7c3aed'],['Gemini Flash',1600,'#4285f4'],['Llama 3.3',1200,'#7c3aed']];
+  const maxT = Math.max(...traded.map(t=>t[1]));
+  document.getElementById('traded-chart').innerHTML = traded.map(([l,v,c])=>`
+    <div class="bar-row"><span class="bar-label">${l}</span><div class="bar-track"><div class="bar-fill" style="width:${v/maxT*100}%;background:${c}"></div></div><span class="bar-val">$${(v/1000).toFixed(1)}K</span></div>`).join('');
+}
+
+// ── Helpers ──────────────────────────────────────────────────────
+function shortAddr(a){ return a ? a.slice(0,6)+'…'+a.slice(-4) : ''; }
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return s+'s ago';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+// ── Contract address display ─────────────────────────────────────
+if(CONFIG.contractAddress){
+  document.getElementById('contract-addr-display').textContent = CONFIG.contractAddress.slice(0,10)+'…'+CONFIG.contractAddress.slice(-6);
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+if (DEMO_MODE) {
+  const b = document.getElementById('demo-banner');
+  if (b) b.style.display = 'flex';
+} else {
+  const el = document.getElementById('contract-addr-display');
+  if (el) el.textContent = CONFIG.contractAddress.slice(0,10)+'…'+CONFIG.contractAddress.slice(-6);
+  // Auto-fill test token in sell form
+  if (CONFIG.testTokenAddress) {
+    const tokenInput = document.getElementById('f-token');
+    if (tokenInput && !tokenInput.value) {
+      tokenInput.value = CONFIG.testTokenAddress;
+      tokenInput.style.borderColor = 'var(--green)';
+      document.getElementById('f-label').placeholder = 'e.g. EIPTEST — 10,000 tokens';
+    }
+  }
+}
+loadListings();
+renderAnalytics();
+setInterval(fetchBlock, 15000);
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

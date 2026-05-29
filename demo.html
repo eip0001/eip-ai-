@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Live Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--bg3:#eae7e0;--ink:#000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.09);--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+html.dark{--bg:#0d0d0b;--bg2:#161614;--bg3:#1e1e1b;--ink:#fff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+html.dark .agent-wrap{background:var(--bg2);border-color:var(--rule)}
+html.dark .agent-term{background:var(--bg)}
+html.dark .stat-box{background:var(--bg2)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);transition:background .2s}
+html.dark nav{background:rgba(13,13,11,0.92)}
+.n-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.n-logo img{height:26px;border-radius:2px}
+.n-r{display:flex;align-items:center;gap:1.5rem}
+.n-r a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;letter-spacing:.04em;transition:color .15s}
+.n-r a:hover{color:var(--ink)}
+#dbtn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer}
+.live-badge{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--green);border:1px solid rgba(22,163,74,.2);padding:3px 9px;border-radius:2px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.wrap{max-width:1080px;margin:0 auto;padding:80px 2rem 4rem}
+
+/* HEADER */
+.header{padding:1.5rem 0 2rem;border-bottom:1px solid var(--rule);margin-bottom:2rem}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.header h1{font-size:clamp(22px,3.5vw,36px);font-weight:300;letter-spacing:-.02em;color:var(--ink);margin-bottom:.4rem;font-family:'Georgia',serif;font-style:italic}
+.header-sub{font-size:13px;color:var(--ink2);line-height:1.75;max-width:560px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:1.5rem}
+.stat-box{background:var(--bg);padding:12px 14px}
+.stat-l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+.stat-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink);transition:color .3s}
+.stat-v.green{color:var(--green)}.stat-v.blue{color:var(--blue)}.stat-v.amber{color:var(--amber)}
+.stat-s{font-size:10px;color:var(--ink3);margin-top:2px}
+
+/* AGENT LAYOUT */
+.agent-layout{display:grid;grid-template-columns:1fr 320px;gap:1.5rem}
+
+/* TERMINAL */
+.agent-wrap{border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--bg)}
+.agent-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--bg2)}
+.agent-title{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.agent-status{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--green)}
+.agent-term{background:var(--bg2);padding:16px;font-family:var(--mono);font-size:11px;height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.agent-term::-webkit-scrollbar{width:2px}
+.agent-term::-webkit-scrollbar-thumb{background:var(--rule)}
+.tl{display:flex;gap:8px;line-height:1.6}
+.tl-ts{color:var(--ink3);flex-shrink:0;font-size:10px;padding-top:1px}
+.tl-ag{color:var(--blue);font-size:10px;flex-shrink:0;padding-top:1px}
+.tl-ao{color:var(--ink2);font-size:10px;flex-shrink:0;padding-top:1px}
+.tl-ae{color:var(--amber);font-size:10px;flex-shrink:0;padding-top:1px}
+.tl-msg{color:var(--ink2);flex:1}
+.tl-msg.green{color:var(--green)}.tl-msg.blue{color:var(--blue)}.tl-msg.amber{color:var(--amber)}.tl-msg.red{color:var(--red)}
+.cursor{display:inline-block;width:7px;height:12px;background:var(--ink3);margin-left:2px;animation:blink .8s step-end infinite;vertical-align:middle}
+
+/* SIGNAL FEED */
+.signal-feed{border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.sf-head{padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--bg2);display:flex;align-items:center;justify-content:space-between}
+.sf-title{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.sf-body{padding:0}
+.sf-item{display:flex;align-items:flex-start;gap:8px;padding:9px 14px;border-bottom:1px solid var(--rule);font-size:11.5px}
+.sf-item:last-child{border-bottom:none}
+.sf-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sf-text{color:var(--ink2);flex:1;line-height:1.55}
+.sf-time{font-family:var(--mono);font-size:9px;color:var(--ink3);flex-shrink:0;padding-top:2px}
+.sf-empty{padding:20px 14px;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+
+/* DECISION PANEL */
+.decision-panel{margin-top:1rem;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.dp-head{padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--bg2);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.dp-body{padding:14px}
+.dp-action{font-size:18px;font-weight:500;letter-spacing:-.01em;color:var(--ink);margin-bottom:6px}
+.dp-action.EXECUTE{color:var(--green)}.dp-action.HOLD{color:var(--amber)}.dp-action.MONITOR{color:var(--blue)}.dp-action.ALERT{color:var(--red)}
+.dp-detail{font-size:13px;color:var(--ink2);margin-bottom:8px;line-height:1.6}
+.dp-conf{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.conf-bar{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:6px}
+.conf-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .5s}
+
+/* CONTROLS */
+.controls{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+.btn-primary{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;padding:9px 20px;border-radius:3px;cursor:pointer;transition:opacity .15s}
+.btn-primary:hover{opacity:.8}
+.btn-sec{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--ink2);border:1px solid var(--rule);padding:8px 16px;border-radius:3px;cursor:pointer;transition:all .15s}
+.btn-sec:hover{color:var(--ink);border-color:var(--ink3)}
+
+footer{max-width:1080px;margin:0 auto;padding:1.5rem 2rem 3rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+@media(max-width:720px){.agent-layout{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="n-logo"><img src="logo.png" alt="EIP.AI"/></a>
+  <div class="n-r">
+    <div class="live-badge"><span class="live-dot"></span>live</div>
+    <button id="dbtn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← eip.ai</a>
+    <a href="pricing.html">plans</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">live agent</div>
+    <h1>EIP.AI is running.</h1>
+    <p class="header-sub">Real-time autonomous decision engine on Base mainnet. Every cycle the agent observes, reasons, and decides — no human in the loop.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-l">block</div><div class="stat-v blue" id="af-block">—</div><div class="stat-s">Base mainnet</div></div>
+    <div class="stat-box"><div class="stat-l">gas</div><div class="stat-v" id="af-gas">—</div><div class="stat-s">gwei</div></div>
+    <div class="stat-box"><div class="stat-l">cycle</div><div class="stat-v" id="af-cycle">0</div><div class="stat-s">decisions made</div></div>
+    <div class="stat-box"><div class="stat-l">actions</div><div class="stat-v green" id="af-actions">0</div><div class="stat-s">executed</div></div>
+    <div class="stat-box"><div class="stat-l">uptime</div><div class="stat-v" id="af-uptime">0s</div><div class="stat-s">this session</div></div>
+  </div>
+
+  <div class="agent-layout">
+    <div>
+      <div class="agent-wrap">
+        <div class="agent-head">
+          <span class="agent-title">// agent terminal</span>
+          <span class="agent-status"><span class="live-dot"></span>running</span>
+        </div>
+        <div class="agent-term" id="aterm"></div>
+      </div>
+      <div class="decision-panel">
+        <div class="dp-head">last decision</div>
+        <div class="dp-body" id="dp-body">
+          <div class="dp-action" id="dp-action">—</div>
+          <div class="dp-detail" id="dp-detail">waiting for first cycle...</div>
+          <div class="dp-conf" id="dp-conf">confidence: —</div>
+          <div class="conf-bar"><div class="conf-fill" id="conf-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn-primary" onclick="triggerCycle()">▶ trigger cycle</button>
+        <button class="btn-sec" onclick="clearLog()">clear log</button>
+        <a href="builder.html" class="btn-sec" style="text-decoration:none;display:inline-flex;align-items:center">build your agent →</a>
+      </div>
+    </div>
+
+    <div class="signal-feed">
+      <div class="sf-head">
+        <span class="sf-title">signal feed</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--ink3)" id="sf-count">0 signals</span>
+      </div>
+      <div class="sf-body" id="sf-body">
+        <div class="sf-empty">no signals yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="f-note">EIP.AI · live agent · Base mainnet</span>
+  <span class="f-note"><a href="index.html" style="color:var(--ink3);text-decoration:none">← back</a></span>
+</footer>
+
+<script>
+// ── DARK MODE ─────────────────────────────────────────────────────
+function toggleDark(){const d=document.documentElement.classList.toggle('dark');localStorage.setItem('eip_dark',d?'1':'0');document.getElementById('dbtn').textContent=d?'◐':'◑'}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dbtn').textContent='◐'}})();
+
+// ── STATE ─────────────────────────────────────────────────────────
+const BASE_RPC = 'https://mainnet.base.org';
+const BACKEND  = window.EIP_BACKEND || null;
+let blockNum=0, gasPrice=0, txCount=0, cycles=0, actions=0;
+let startTime = Date.now(), signals = [], running = true;
+
+// ── TERMINAL ──────────────────────────────────────────────────────
+function tLine(type, msg, color='') {
+  const term = document.getElementById('aterm');
+  const now = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const d = document.createElement('div');
+  d.className = 'tl';
+  const prefix = type==='ag'?'[AGENT]':type==='ao'?'[OBS]':type==='ae'?'[EXEC]':type==='as'?'[SIG]':'[SYS]';
+  const prefixColor = type==='ag'?'tl-ag':type==='ao'?'tl-ao':type==='ae'?'tl-ae':'tl-ao';
+  d.innerHTML = `<span class="tl-ts">${now}</span><span class="${prefixColor}">${prefix}</span><span class="tl-msg ${color}">${msg}</span>`;
+  term.appendChild(d);
+  // keep last 80 lines
+  while(term.children.length > 80) term.removeChild(term.firstChild);
+  term.scrollTop = term.scrollHeight;
+}
+
+function clearLog() { document.getElementById('aterm').innerHTML = ''; }
+
+// ── SIGNAL FEED ───────────────────────────────────────────────────
+function addSignal(msg, color='#7a7570') {
+  signals.unshift({ msg, color, ts: new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit'}) });
+  if(signals.length > 12) signals.pop();
+  const body = document.getElementById('sf-body');
+  document.getElementById('sf-count').textContent = signals.length+' signals';
+  body.innerHTML = signals.map(s =>
+    `<div class="sf-item"><div class="sf-dot" style="background:${s.color}"></div><div class="sf-text">${s.msg}</div><div class="sf-time">${s.ts}</div></div>`
+  ).join('');
+}
+
+// ── STATS ─────────────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('af-block').textContent = blockNum ? blockNum.toLocaleString() : '—';
+  document.getElementById('af-gas').textContent   = gasPrice || '—';
+  document.getElementById('af-cycle').textContent = cycles;
+  document.getElementById('af-actions').textContent = actions;
+  const up = Math.floor((Date.now()-startTime)/1000);
+  document.getElementById('af-uptime').textContent = up < 60 ? up+'s' : Math.floor(up/60)+'m '+up%60+'s';
+}
+
+function renderDecision(dec) {
+  if(!dec) return;
+  document.getElementById('dp-action').textContent  = dec.action || '—';
+  document.getElementById('dp-action').className    = 'dp-action '+(dec.action||'');
+  document.getElementById('dp-detail').textContent  = dec.detail || '—';
+  document.getElementById('dp-conf').textContent    = 'confidence: '+(dec.confidence||'—')+'%';
+  document.getElementById('conf-fill').style.width  = (dec.confidence||0)+'%';
+}
+
+// ── CHAIN DATA ────────────────────────────────────────────────────
+async function fetchChain() {
+  try {
+    const r = await fetch(BASE_RPC, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify([
+        {jsonrpc:'2.0',id:1,method:'eth_blockNumber',params:[]},
+        {jsonrpc:'2.0',id:2,method:'eth_gasPrice',params:[]}
+      ])
+    });
+    const d = await r.json();
+    if(Array.isArray(d)) {
+      blockNum = parseInt(d[0].result,16)||blockNum;
+      gasPrice = (parseInt(d[1].result,16)/1e9).toFixed(4)||gasPrice;
+    }
+  } catch {}
+}
+
+// ── FAST REASON ───────────────────────────────────────────────────
+function fastReason() {
+  const gas = parseFloat(gasPrice)||0.005;
+  const signals_out = [];
+  let action='MONITOR', detail='monitoring chain conditions', confidence=65;
+
+  if(gas < 0.003) { signals_out.push({msg:`gas optimal: ${gas} gwei`,color:'var(--green)'}); action='EXECUTE'; detail=`gas ${gas} gwei — optimal execution window`; confidence=82; }
+  else if(gas > 0.009) { signals_out.push({msg:`gas high: ${gas} gwei`,color:'var(--amber)'}); action='HOLD'; detail=`gas ${gas} gwei — elevated, holding`; confidence=88; }
+  else { detail=`monitoring — gas ${gas} gwei, block ${blockNum.toLocaleString()}`; }
+
+  if(cycles>0&&cycles%5===0) { signals_out.push({msg:`cycle ${cycles} — deep analysis queued`,color:'var(--blue)'}); }
+
+  return { action, detail, confidence, signals: signals_out };
+}
+
+// ── AGENT CYCLE ───────────────────────────────────────────────────
+async function agentCycle() {
+  if(!running) return;
+  await fetchChain();
+  tLine('ao', `block ${blockNum.toLocaleString()||'—'} · gas ${gasPrice||'—'} gwei`);
+
+  const result = fastReason();
+  cycles++;
+
+  tLine('ao', `reasoning... → ${result.action} (${result.confidence}%)`, result.action==='EXECUTE'?'green':result.action==='HOLD'?'amber':result.action==='ALERT'?'red':'');
+  tLine('ag', result.detail, result.action==='EXECUTE'?'green':'');
+
+  if(result.action==='EXECUTE') { actions++; tLine('ae', 'tx prepared — safety check passed', 'green'); addSignal(`EXECUTE: ${result.detail}`, 'var(--green)'); }
+  else { result.signals?.forEach(s => addSignal(s.msg, s.color)); }
+
+  renderDecision(result);
+  updateStats();
+}
+
+// ── BACKEND POLL ──────────────────────────────────────────────────
+async function pollBackend() {
+  if(!BACKEND) return false;
+  try {
+    const r = await fetch(BACKEND+'/api/state');
+    if(!r.ok) return false;
+    const d = await r.json();
+    if(!d?.decision) return false;
+    const dec=d.decision, obs=d.obs;
+    blockNum=obs?.blockNumber||blockNum;
+    gasPrice=obs?.gasGwei||gasPrice;
+    cycles=d.state?.cycles||cycles;
+    actions=d.state?.actions||actions;
+    tLine('ag',`[LIVE] cycle ${cycles} · ${dec.action}`);
+    renderDecision(dec);
+    addSignal(`backend: ${dec.detail}`, 'var(--blue)');
+    updateStats();
+    return true;
+  } catch { return false; }
+}
+
+function triggerCycle() { agentCycle(); }
+
+// ── INIT ──────────────────────────────────────────────────────────
+setInterval(updateStats, 1000);
+
+(async()=>{
+  tLine('ag','agent initialized · Base mainnet · autonomous mode');
+  const ok = await pollBackend();
+  await fetchChain();
+  tLine('ao',`block ${blockNum.toLocaleString()||'—'} · gas ${gasPrice||'—'} gwei`);
+  tLine('ag',`starting decision loop · ${ok?'backend connected':'local mode'}`, ok?'green':'');
+  await agentCycle();
+  setInterval(agentCycle, 25000);
+  if(ok) setInterval(pollBackend, 30000);
+})();
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>

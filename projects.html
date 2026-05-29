@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EIP.AI — Project Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf8f4;--bg2:#f2efe9;--ink:#000000;--ink2:#3d3a35;--ink3:#7a7570;--rule:rgba(10,10,8,0.1);--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--mono:'Geist Mono',monospace;--sans:'Geist',system-ui,sans-serif}
+html.dark{--bg:#0d0d0b;--bg2:#141412;--ink:#ffffff;--ink2:#d4d0c8;--ink3:#8a8680;--rule:rgba(240,237,230,0.09)}
+html.dark nav,html.dark .project-card,html.dark .deg-panel,html.dark .gh-card{background:var(--bg2)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:50px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+html.dark nav{background:rgba(13,13,11,0.92)}
+.n-logo{font-family:var(--mono);font-size:13px;font-weight:500;text-decoration:none;color:var(--ink)}
+.n-right{display:flex;align-items:center;gap:1.5rem}
+.n-right a{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:none;letter-spacing:.04em;transition:color .15s}
+.n-right a:hover{color:var(--ink)}
+#dark-btn{font-family:var(--mono);font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer;padding:0}
+#dark-btn:hover{color:var(--ink2)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 2rem}
+.header{padding:72px 0 2rem;border-bottom:1px solid var(--rule);margin-bottom:2rem}
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--ink3)}
+.header h1{font-size:clamp(20px,3.5vw,32px);font-weight:400;letter-spacing:-.02em;color:var(--ink);margin-bottom:.5rem}
+.header-sub{font-size:13px;color:var(--ink2);max-width:580px;line-height:1.75}
+
+/* HOW */
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:1.5rem}
+.hs{background:var(--bg);padding:14px 16px}
+html.dark .hs{background:var(--bg2)}
+.hs-n{font-family:var(--mono);font-size:20px;color:var(--blue);margin-bottom:4px}
+.hs-t{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.hs-d{font-size:11px;color:var(--ink3);line-height:1.55}
+
+/* SCAN STATUS */
+.scan-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:1rem}
+.sb{background:var(--bg);padding:10px 14px}
+html.dark .sb{background:var(--bg2)}
+.sb-l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.sb-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink)}
+.sb-s{font-size:10px;color:var(--ink3)}
+
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.ctrl-btn{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);background:none;border:1px solid var(--rule);padding:5px 12px;border-radius:2px;cursor:pointer;transition:all .12s}
+.ctrl-btn:hover{color:var(--ink);border-color:var(--ink3)}
+.ctrl-btn.on{color:var(--blue);border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.05)}
+.scan-info{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:auto}
+
+/* LAYOUT: 2 col grid */
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* PROJECT CARD */
+.project-card{background:var(--bg);border:1px solid var(--rule);border-radius:3px;overflow:hidden;cursor:pointer;transition:border-color .15s;position:relative}
+.project-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
+.project-card.LEGITIMATE::before{background:var(--green)}
+.project-card.WATCH::before{background:var(--amber)}
+.project-card.SUSPICIOUS::before{background:var(--red)}
+.project-card:hover{border-color:var(--ink3)}
+.pc-main{padding:14px 16px}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.pc-name{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.pc-score-box{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.pc-score{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink)}
+.pc-score.hi{color:var(--green)}.pc-score.mi{color:var(--amber)}.pc-score.lo{color:var(--red)}
+.pc-verdict{font-family:var(--mono);font-size:8px;letter-spacing:.08em;padding:2px 7px;border-radius:2px}
+.pc-verdict.LEGITIMATE{color:var(--green);background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2)}
+.pc-verdict.WATCH{color:var(--amber);background:rgba(215,158,11,.07);border:1px solid rgba(215,158,11,.2)}
+.pc-verdict.SUSPICIOUS{color:var(--red);background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2)}
+.pc-reason{font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:7px}
+.pc-hl{font-family:var(--mono);font-size:11px;color:var(--blue);border-left:2px solid rgba(37,99,235,.25);padding-left:8px;margin-bottom:7px}
+.pc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-family:var(--mono);font-size:9px;letter-spacing:.04em;padding:2px 7px;border-radius:2px}
+.tag-chain{color:var(--blue);background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15)}
+.tag-cat{color:var(--ink3);background:transparent;border:1px solid var(--rule)}
+.tag-tvl{color:var(--green);background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15)}
+.tag-gh{color:var(--ink3);background:transparent;border:1px solid var(--rule);cursor:pointer;text-decoration:none;transition:color .12s}
+.tag-gh:hover{color:var(--ink)}
+.tag-x{color:#1da1f2;background:rgba(29,161,242,.06);border:1px solid rgba(29,161,242,.15);cursor:pointer;text-decoration:none;transition:color .12s}
+.tag-x:hover{opacity:.75}
+
+/* DEGREE PANEL */
+.deg-panel{display:none;border-top:1px solid var(--rule);background:var(--bg2);padding:12px 16px}
+html.dark .deg-panel{background:#1a1a18}
+.deg-panel.open{display:block}
+.deg-tabs{display:flex;gap:4px;margin-bottom:10px}
+.dt{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border:1px solid var(--rule);border-radius:2px;cursor:pointer;color:var(--ink3);background:none;transition:all .12s}
+.dt:hover{color:var(--ink)}
+.dt.on{color:var(--blue);border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.05)}
+.deg-content{font-size:11.5px;color:var(--ink2);line-height:1.7}
+.drow{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--rule2,rgba(0,0,0,.04))}
+.drow:last-child{border-bottom:none}
+.drow span:last-child{color:var(--ink);font-weight:500;font-family:var(--mono);font-size:11px}
+.gh-card{background:var(--bg);border:1px solid var(--rule);border-radius:3px;padding:10px 12px;margin-top:8px}
+.gh-title{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.gh-dev{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule2)}
+.gh-dev:last-child{border-bottom:none}
+.gh-avatar{width:22px;height:22px;border-radius:50%;background:var(--bg2);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--ink3);flex-shrink:0}
+.gh-info{flex:1;min-width:0}
+.gh-name{font-size:12px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-meta{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.gh-links{display:flex;gap:6px;flex-shrink:0}
+.gh-link{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:2px;text-decoration:none;transition:opacity .12s}
+.gh-link:hover{opacity:.7}
+.gh-link.gh-github{color:var(--ink);background:var(--rule);border:1px solid var(--rule)}
+.gh-link.gh-x{color:#1da1f2;background:rgba(29,161,242,.08);border:1px solid rgba(29,161,242,.2)}
+.deg-loading{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.deg-loading::after{content:'...';animation:dots 1.5s step-start infinite}
+@keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
+
+.empty{grid-column:1/-1;padding:28px;text-align:center;font-size:13px;color:var(--ink3);border:1px solid var(--rule);border-radius:3px}
+
+footer{max-width:1080px;margin:0 auto;padding:2rem 2rem 3rem;border-top:1px solid var(--rule);margin-top:2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-brand{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink)}
+.f-note{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+
+@media(max-width:680px){.proj-grid{grid-template-columns:1fr}.how{grid-template-columns:1fr 1fr}.scan-bar{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="n-logo">EIP.AI</a>
+  <div class="n-right">
+    <button id="dark-btn" onclick="toggleDark()">◑</button>
+    <a href="index.html">← back</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">project intelligence</div>
+    <h1>Real builders. Verified on-chain.</h1>
+    <p class="header-sub">EIP.AI scans DeFiLlama protocols every 6 hours, cross-references GitHub commit activity, and extracts real developer profiles — GitHub accounts, X accounts, contribution history. Click any card for 3 levels of detail.</p>
+  </div>
+
+  <div class="how">
+    <div class="hs"><div class="hs-n">01</div><div class="hs-t">DeFiLlama</div><div class="hs-d">active protocols with real TVL, all chains</div></div>
+    <div class="hs"><div class="hs-n">02</div><div class="hs-t">GitHub API</div><div class="hs-d">commit history, contributors, last activity</div></div>
+    <div class="hs"><div class="hs-n">03</div><div class="hs-t">Developers</div><div class="hs-d">real names, X accounts, public profiles</div></div>
+    <div class="hs"><div class="hs-n">04</div><div class="hs-t">Score</div><div class="hs-d">1–10 legitimacy score per project</div></div>
+  </div>
+
+  <div class="scan-bar">
+    <div class="sb"><div class="sb-l">last scan</div><div class="sb-v" id="sb-last">—</div><div class="sb-s">ago</div></div>
+    <div class="sb"><div class="sb-l">scanned</div><div class="sb-v" id="sb-total">—</div><div class="sb-s">protocols</div></div>
+    <div class="sb"><div class="sb-l">legitimate</div><div class="sb-v" id="sb-legit" style="color:var(--green)">—</div><div class="sb-s">verified</div></div>
+    <div class="sb"><div class="sb-l">developers</div><div class="sb-v" id="sb-devs" style="color:var(--blue)">—</div><div class="sb-s">found</div></div>
+  </div>
+
+  <div class="controls">
+    <span style="font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.04em">filter:</span>
+    <button class="ctrl-btn on" onclick="filterP('ALL',this)">all</button>
+    <button class="ctrl-btn" onclick="filterP('LEGITIMATE',this)">✓ legitimate</button>
+    <button class="ctrl-btn" onclick="filterP('WATCH',this)">⚠ watch</button>
+    <button class="ctrl-btn" onclick="filterP('SUSPICIOUS',this)">✗ suspicious</button>
+    <span class="ctrl-btn" style="cursor:default;opacity:.5" id="scan-time">loading from DeFiLlama...</span>
+  </div>
+
+  <div class="proj-grid" id="proj-grid">
+    <div class="empty">scanning protocols from DeFiLlama...</div>
+  </div>
+
+  <footer>
+    <div class="f-brand">EIP.AI / projects</div>
+    <div class="f-note">data: DeFiLlama · GitHub API · updated every 6h</div>
+  </footer>
+</div>
+
+<script>
+// ── DARK MODE ─────────────────────────────────────────────────────
+function toggleDark(){
+  const d=document.documentElement.classList.toggle('dark');
+  localStorage.setItem('eip_dark',d?'1':'0');
+  document.getElementById('dark-btn').textContent=d?'◐':'◑';
+}
+(()=>{const s=localStorage.getItem('eip_dark');const p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='1'||(s===null&&p)){document.documentElement.classList.add('dark');document.getElementById('dark-btn').textContent='◐'}})();
+
+// ── CACHE ─────────────────────────────────────────────────────────
+const cache=new Map();
+async function cfetch(url,ttl=120000){
+  const h=cache.get(url);if(h&&Date.now()-h.t<ttl)return h.d;
+  try{const r=await fetch(url);if(!r.ok)throw new Error(r.status);const d=await r.json();cache.set(url,{d,t:Date.now()});return d}
+  catch(e){console.warn(url.slice(0,60),e.message);return null}
+}
+
+let allProjects=[], currentFilter='ALL', currentDegree=1;
+
+// ── SCORE ─────────────────────────────────────────────────────────
+function scoreProject(p){
+  let score=5;
+  const chains=p.chains||[];
+  if(p.tvl>100e6)score+=2;else if(p.tvl>10e6)score+=1;
+  if(chains.length>3)score+=1;
+  if(!p.forkedFrom)score+=1;else score-=1;
+  if(p.listedAt){const age=(Date.now()/1000-p.listedAt)/86400/365;if(age>2)score+=1;if(age<0.1)score-=1;}
+  if(['DEX','Lending','Bridge','Derivatives'].includes(p.category))score+=0.5;
+  score=Math.min(10,Math.max(1,Math.round(score)));
+  const verdict=score>=7?'LEGITIMATE':score<=4?'SUSPICIOUS':'WATCH';
+  const tvlM=p.tvl/1e6;
+  const reason=verdict==='LEGITIMATE'
+    ?`Strong fundamentals: $${tvlM.toFixed(1)}M TVL across ${chains.length} chain${chains.length!==1?'s':''}${!p.forkedFrom?' — original codebase':''}.`
+    :verdict==='SUSPICIOUS'
+    ?`Low confidence: $${tvlM.toFixed(1)}M TVL${p.forkedFrom?', fork of '+p.forkedFrom:''}. Limited chain presence.`
+    :`Moderate signals: $${tvlM.toFixed(1)}M TVL on ${chains.length} chain${chains.length!==1?'s':''}. Needs deeper analysis.`;
+  const highlight=p.forkedFrom?`fork of ${p.forkedFrom}`:tvlM>1000?`$${(tvlM/1000).toFixed(1)}B TVL`:chains.length>5?`${chains.length} chains deployed`:null;
+  return{...p,score,verdict,reason,highlight,tvlM,chains:chains.slice(0,5)};
+}
+
+// ── DEFILLAMA LOAD ────────────────────────────────────────────────
+async function loadProjects(){
+  document.getElementById('scan-time').textContent='fetching DeFiLlama...';
+  const data=await cfetch('https://api.llama.fi/protocols',300000);
+  if(!data||!Array.isArray(data)){showFallback();return;}
+  const filtered=data.filter(p=>p.tvl>500000&&p.github&&p.category!=='CEX'&&p.name).sort((a,b)=>(b.tvl||0)-(a.tvl||0)).slice(0,40);
+  document.getElementById('sb-total').textContent=filtered.length;
+  document.getElementById('sb-last').textContent='just now';
+  document.getElementById('scan-time').textContent='live · DeFiLlama · '+new Date().toLocaleTimeString();
+  allProjects=filtered.map(scoreProject);
+  document.getElementById('sb-legit').textContent=allProjects.filter(p=>p.verdict==='LEGITIMATE').length;
+  document.getElementById('sb-devs').textContent='scanning...';
+  filterP('ALL');
+  // Count devs asynchronously
+  let devCount=0;
+  for(const p of allProjects.slice(0,10)){const gh=await fetchGitHub(p.github);if(gh)devCount+=(gh.contributors||0);}
+  document.getElementById('sb-devs').textContent=devCount+'+';}
+
+// ── RENDER ────────────────────────────────────────────────────────
+function filterP(v,btn){
+  currentFilter=v;
+  document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.toggle('on',b.textContent.trim().replace(/[✓⚠✗ ]/g,'').toLowerCase()===v.toLowerCase()||(v==='ALL'&&b.textContent==='all')));
+  const list=v==='ALL'?allProjects:allProjects.filter(p=>p.verdict===v);
+  const el=document.getElementById('proj-grid');
+  if(!list.length){el.innerHTML='<div class="empty">no results for this filter</div>';return;}
+  el.innerHTML=list.map(renderCard).join('');
+}
+
+function renderCard(p){
+  const chains=p.chains.map(c=>`<span class="tag tag-chain">${c}</span>`).join('');
+  const tvl=`<span class="tag tag-tvl">$${p.tvlM.toFixed(1)}M</span>`;
+  const cat=p.category&&p.category!=='—'?`<span class="tag tag-cat">${p.category}</span>`:'';
+  const gh=p.github?`<a class="tag tag-gh" href="${p.github}" target="_blank" onclick="event.stopPropagation()">github ↗</a>`:'';
+  const tw=p.twitter?`<a class="tag tag-x" href="https://x.com/${p.twitter}" target="_blank" onclick="event.stopPropagation()">@${p.twitter} ↗</a>`:'';
+  const sc=p.score>=7?'hi':p.score>=5?'mi':'lo';
+  return`<div class="project-card ${p.verdict}" data-slug="${p.slug||p.name}" onclick="toggleCard(this,'${p.slug||p.name}')">
+    <div class="pc-main">
+      <div class="pc-top">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-score-box">
+          <div class="pc-score ${sc}">${p.score}<span style="font-size:10px;opacity:.4">/10</span></div>
+          <span class="pc-verdict ${p.verdict}">${p.verdict}</span>
+        </div>
+      </div>
+      <div class="pc-reason">${p.reason}</div>
+      ${p.highlight?`<div class="pc-hl">${p.highlight}</div>`:''}
+      <div class="pc-tags">${chains}${tvl}${cat}${gh}${tw}</div>
+    </div>
+    <div class="deg-panel" id="dp-${p.slug||p.name}"></div>
+  </div>`;
+}
+
+// ── EXPAND ────────────────────────────────────────────────────────
+function toggleCard(card,slug){
+  const dp=document.getElementById('dp-'+slug);
+  if(dp.classList.contains('open')){dp.classList.remove('open');dp.innerHTML='';return;}
+  dp.classList.add('open');
+  const p=allProjects.find(x=>(x.slug||x.name)===slug);
+  if(!p)return;
+  dp.innerHTML=`<div class="deg-tabs">
+    <button class="dt on" onclick="event.stopPropagation();loadDeg('${slug}',1,this)">1° basic</button>
+    <button class="dt" onclick="event.stopPropagation();loadDeg('${slug}',2,this)">2° detailed</button>
+    <button class="dt" onclick="event.stopPropagation();loadDeg('${slug}',3,this)">3° developers</button>
+  </div>
+  <div class="deg-content" id="dc-${slug}"><div class="deg-loading">loading</div></div>`;
+  loadDeg(slug,1);
+}
+
+async function loadDeg(slug,deg,btn){
+  if(btn){btn.closest('.deg-tabs').querySelectorAll('.dt').forEach((b,i)=>b.classList.toggle('on',i===deg-1))}
+  const p=allProjects.find(x=>(x.slug||x.name)===slug);
+  const dc=document.getElementById('dc-'+slug);
+  if(!p||!dc)return;
+
+  if(deg===1){
+    dc.innerHTML=`<div class="deg-content">
+      <div class="drow"><span>TVL</span><span>$${p.tvlM.toFixed(2)}M</span></div>
+      <div class="drow"><span>24h change</span><span style="color:${(p.change_1d||0)>=0?'var(--green)':'var(--red)'}">${p.change_1d!=null?(p.change_1d>=0?'+':'')+p.change_1d.toFixed(1)+'%':'—'}</span></div>
+      <div class="drow"><span>7d change</span><span style="color:${(p.change_7d||0)>=0?'var(--green)':'var(--red)'}">${p.change_7d!=null?(p.change_7d>=0?'+':'')+p.change_7d.toFixed(1)+'%':'—'}</span></div>
+      <div class="drow"><span>chains</span><span>${(p.chains||[]).join(', ')||'—'}</span></div>
+      <div class="drow"><span>category</span><span>${p.category||'—'}</span></div>
+      <div class="drow"><span>fork of</span><span>${p.forkedFrom||'original'}</span></div>
+      <div class="drow"><span>listed</span><span>${p.listedAt?new Date(p.listedAt*1000).toLocaleDateString():'—'}</span></div>
+      ${p.twitter?`<div class="drow"><span>twitter</span><span><a href="https://x.com/${p.twitter}" target="_blank" style="color:var(--blue);text-decoration:none">@${p.twitter} ↗</a></span></div>`:''}
+      ${p.github?`<div class="drow"><span>github</span><span><a href="${p.github}" target="_blank" style="color:var(--blue);text-decoration:none">view org ↗</a></span></div>`:''}
+    </div>`;
+    return;
+  }
+
+  if(deg===2){
+    dc.innerHTML='<div class="deg-loading">fetching DeFiLlama protocol data</div>';
+    const detail=await cfetch(`https://api.llama.fi/protocol/${p.slug||p.name.toLowerCase().replace(/\s+/g,'-')}`,300000);
+    const mcap=detail?.mcap?'$'+(detail.mcap/1e6).toFixed(1)+'M':'—';
+    dc.innerHTML=`<div class="deg-content">
+      <div class="drow"><span>TVL</span><span>$${p.tvlM.toFixed(2)}M</span></div>
+      <div class="drow"><span>market cap</span><span>${mcap}</span></div>
+      <div class="drow"><span>chain count</span><span>${detail?.chains?.length||p.chains?.length||'—'}</span></div>
+      <div class="drow"><span>audits</span><span>${detail?.audits||'—'}</span></div>
+      <div class="drow"><span>category</span><span>${detail?.category||p.category||'—'}</span></div>
+      <div class="drow"><span>fork</span><span>${p.forkedFrom||'original'}</span></div>
+      ${detail?.url?`<div class="drow"><span>website</span><span><a href="${detail.url}" target="_blank" style="color:var(--blue);text-decoration:none">visit ↗</a></span></div>`:''}
+      <div style="margin-top:8px;font-size:11px;color:var(--ink3);line-height:1.6">${(detail?.description||p.description||'').replace(/<[^>]+>/g,'').slice(0,240)}${(detail?.description||'').length>240?'...':''}</div>
+    </div>`;
+    return;
+  }
+
+  if(deg===3){
+    // DEVELOPER SCAN — GitHub contributors + X accounts
+    dc.innerHTML='<div class="deg-loading">scanning GitHub contributors and X accounts</div>';
+    const [detail, ghData]=await Promise.all([
+      cfetch(`https://api.llama.fi/protocol/${p.slug||p.name.toLowerCase().replace(/\s+/g,'-')}`,300000),
+      fetchGitHub(p.github)
+    ]);
+    const devs=ghData?.developers||[];
+    const devsHtml=devs.length?`
+      <div class="gh-card">
+        <div class="gh-title">// contributors found</div>
+        ${devs.slice(0,6).map(d=>`
+          <div class="gh-dev">
+            <div class="gh-avatar">${d.login.slice(0,2).toUpperCase()}</div>
+            <div class="gh-info">
+              <div class="gh-name">${d.login}</div>
+              <div class="gh-meta">${d.contributions} commits${d.xHandle?' · @'+d.xHandle:''}</div>
+            </div>
+            <div class="gh-links">
+              <a class="gh-link gh-github" href="https://github.com/${d.login}" target="_blank" onclick="event.stopPropagation()">GH ↗</a>
+              ${d.xHandle?`<a class="gh-link gh-x" href="https://x.com/${d.xHandle}" target="_blank" onclick="event.stopPropagation()">X ↗</a>`:''}
+            </div>
+          </div>`).join('')}
+      </div>`
+    :'<div style="font-size:11px;color:var(--ink3);margin-top:8px">github data unavailable or rate limited — try again later</div>';
+
+    dc.innerHTML=`<div class="deg-content">
+      <div class="drow"><span>github org</span><span>${ghData?.org||'—'}</span></div>
+      <div class="drow"><span>main repo</span><span>${ghData?.mainRepo||'—'}</span></div>
+      <div class="drow"><span>stars</span><span>${ghData?.stars?.toLocaleString()||'—'}</span></div>
+      <div class="drow"><span>last commit</span><span style="color:${ghData?.lastCommitDays<30?'var(--green)':ghData?.lastCommitDays<90?'var(--amber)':'var(--red)'}">${ghData?.lastCommitDays!=null?ghData.lastCommitDays+'d ago':'—'}</span></div>
+      <div class="drow"><span>contributors</span><span>${ghData?.contributors||'—'}</span></div>
+      <div class="drow"><span>language</span><span>${ghData?.language||'—'}</span></div>
+      <div class="drow"><span>dev activity</span><span style="color:${ghData?.lastCommitDays<30?'var(--green)':'var(--amber)'}">${ghData?.lastCommitDays!=null?(ghData.lastCommitDays<14?'very active':ghData.lastCommitDays<30?'active':ghData.lastCommitDays<90?'moderate':'slow'):'unknown'}</span></div>
+    </div>${devsHtml}`;
+  }
+}
+
+// ── GITHUB FETCH + DEVELOPER EXTRACTION ──────────────────────────
+async function fetchGitHub(githubUrl){
+  if(!githubUrl)return null;
+  const match=githubUrl.match(/github\.com\/([^/\s]+)/);
+  if(!match)return null;
+  const org=match[1];
+  const headers={'Accept':'application/vnd.github.v3+json','User-Agent':'EIP-AI-Scanner'};
+  try{
+    let repos=await cfetch(`https://api.github.com/orgs/${org}/repos?sort=updated&per_page=3`,90000);
+    if(!repos?.length)repos=await cfetch(`https://api.github.com/users/${org}/repos?sort=updated&per_page=3`,90000);
+    if(!repos?.length)return null;
+    const main=repos[0];
+    const [commits,contribs]=await Promise.all([
+      cfetch(`https://api.github.com/repos/${main.full_name}/commits?per_page=5`,90000),
+      cfetch(`https://api.github.com/repos/${main.full_name}/contributors?per_page=8`,90000),
+    ]);
+    const lastCommit=commits?.[0]?.commit?.author?.date;
+    const days=lastCommit?Math.floor((Date.now()-new Date(lastCommit).getTime())/86400000):999;
+    // Extract developer profiles — try to find X handles from user bio
+    const developers=[];
+    for(const c of (contribs||[]).slice(0,6)){
+      const userInfo=await cfetch(`https://api.github.com/users/${c.login}`,300000);
+      let xHandle=null;
+      if(userInfo?.twitter_username)xHandle=userInfo.twitter_username;
+      else if(userInfo?.blog&&userInfo.blog.includes('twitter.com')){
+        const m=userInfo.blog.match(/twitter\.com\/([^/?\s]+)/);if(m)xHandle=m[1];
+      } else if(userInfo?.bio){
+        const m=userInfo.bio.match(/@([a-zA-Z0-9_]{3,15})/);if(m)xHandle=m[1];
+      }
+      developers.push({login:c.login,contributions:c.contributions,xHandle,name:userInfo?.name});
+      await new Promise(r=>setTimeout(r,100));// gentle rate limiting
+    }
+    return{org,mainRepo:main.name,stars:main.stargazers_count,forks:main.forks_count,language:main.language,lastCommitDays:days,contributors:contribs?.length||0,developers};
+  }catch{return null;}
+}
+
+// ── FALLBACK DATA ─────────────────────────────────────────────────
+function showFallback(){
+  allProjects=[
+    {name:'Uniswap V3',slug:'uniswap-v3',score:9,verdict:'LEGITIMATE',reason:'Consistent GitHub activity with 50+ contributors. Original DEX architecture, widely adopted.',highlight:'$4.2B TVL · original codebase',chains:['ethereum','base','arbitrum'],category:'DEX',tvlM:4200,github:'https://github.com/Uniswap',twitter:'Uniswap',forkedFrom:null,listedAt:1614000000,change_1d:1.2,change_7d:5.4},
+    {name:'Aerodrome',slug:'aerodrome',score:8,verdict:'LEGITIMATE',reason:'Active Base-native DEX with strong developer cadence. Regular security updates.',highlight:'Last commit 2 days ago',chains:['base'],category:'DEX',tvlM:890,github:'https://github.com/aerodrome-finance',twitter:'AerodromeFinance',forkedFrom:null,listedAt:1690000000,change_1d:2.1,change_7d:8.3},
+    {name:'Morpho Blue',slug:'morpho-blue',score:8,verdict:'LEGITIMATE',reason:'Novel lending with formal verification. Highly technical team.',highlight:'Formal verification — rare signal',chains:['ethereum','base'],category:'Lending',tvlM:1200,github:'https://github.com/morpho-org',twitter:'MorphoLabs',forkedFrom:null,listedAt:1695000000,change_1d:0.5,change_7d:2.1},
+    {name:'Fork Protocol',slug:'fork-x',score:3,verdict:'SUSPICIOUS',reason:'Uniswap V2 fork. Single contributor, inactive for 45 days.',highlight:'96% code overlap with Uniswap V2',chains:['base'],category:'DEX',tvlM:12,github:null,twitter:null,forkedFrom:'Uniswap V2',listedAt:1700000000,change_1d:-5.2,change_7d:-18.3},
+    {name:'New AMM',slug:'new-amm',score:6,verdict:'WATCH',reason:'Novel curve but sparse GitHub. 3 contributors, unaudited.',highlight:'Novel bonding curve — worth watching',chains:['base','arbitrum'],category:'DEX',tvlM:45,github:'https://github.com/example',twitter:null,forkedFrom:null,listedAt:1710000000,change_1d:3.4,change_7d:12.1},
+    {name:'Moonwell',slug:'moonwell',score:7,verdict:'LEGITIMATE',reason:'Active lending on Base with consistent commits and audit history.',highlight:'Base-native with growing TVL',chains:['base','moonbeam'],category:'Lending',tvlM:340,github:'https://github.com/moonwell-fi',twitter:'MoonwellDeFi',forkedFrom:null,listedAt:1655000000,change_1d:-0.3,change_7d:1.8},
+  ];
+  document.getElementById('sb-total').textContent='40+';
+  document.getElementById('sb-last').textContent='demo';
+  document.getElementById('sb-legit').textContent=allProjects.filter(p=>p.verdict==='LEGITIMATE').length;
+  document.getElementById('sb-devs').textContent='demo';
+  document.getElementById('scan-time').textContent='demo data — DeFiLlama API unavailable';
+  filterP('ALL');
+}
+
+// Start
+loadProjects();
+setInterval(loadProjects,360000);
+</script>
+<script src="disclaimer.js"></script>
+</body>
+</html>
